@@ -9,7 +9,7 @@ public class IDandPassword {
 
     public IDandPassword() {
         String line;
-        try (BufferedReader br = new BufferedReader(new FileReader("/Users/farhadrahimov/Desktop/Team Project-1, Farhad/team-project-team-1/loginSystem/Book1.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("loginSystem/Book1.csv"))) {
             while ((line = br.readLine()) != null) {
                 String[] idPassword = line.split(",");
                 if(idPassword.length == 2)

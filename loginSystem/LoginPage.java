@@ -1,29 +1,40 @@
 package loginSystem;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 import javax.swing.plaf.FontUIResource;
 
 public class LoginPage implements ActionListener {
     JFrame frame = new JFrame();
 
     JPanel panel = new JPanel();
+
+    JLabel imageLabel = new JLabel(new ImageIcon("loginSystem/resized.png"));
 
     JButton loginButton = new JButton("Login");
     JButton signUpButton = new JButton("Sign Up");
@@ -42,10 +53,13 @@ public class LoginPage implements ActionListener {
     public LoginPage(HashMap <String, String> loginInfo) {
         loginInfoNew = loginInfo;
 
-        ImageIcon bgImg = new ImageIcon("team-project-team-1/loginSystem/sa.png");
-
-        panel.setPreferredSize(new Dimension(500, 500));
+        panel.setPreferredSize(new Dimension(800, 500));
         panel.setLayout(null);
+        Border panelBorder = BorderFactory.createLineBorder(Color.black, 1);
+        panel.setBorder(panelBorder);
+        
+
+        imageLabel.setBounds(400, 50, 400, 350);
 
         userIDLabel.setBounds(50, 100, 75, 25);
         userPasswordLabel.setBounds(50, 150, 75, 25);
@@ -53,11 +67,24 @@ public class LoginPage implements ActionListener {
         messageLabel.setBounds(125, 250, 250, 35);
         messageLabel.setFont(new FontUIResource("Times New Roman", FontUIResource.BOLD, 25));
 
+        JLabel clickableLabel = new JLabel("Click Me!");
+        clickableLabel.setForeground(Color.BLUE);
+        clickableLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        clickableLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                JOptionPane.showMessageDialog(null, "Label is clicked!");
+            }
+        });
+
         userIDField.setBounds(125, 100, 200, 25);
         userPasswordField.setBounds(125, 150, 200, 25);
 
-        loginButton.setBounds(125, 225, 100, 25);
-        signUpButton.setBounds(250, 225, 100, 25);
+        loginButton.setBounds(50, 225, 275, 40);
+        loginButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
+
+        clickableLabel.setBounds(125, 350, 100, 30);
 
         loginButton.addActionListener(this);
         signUpButton.addActionListener(this);
@@ -71,19 +98,21 @@ public class LoginPage implements ActionListener {
         panel.add(userPasswordField);
         panel.add(loginButton);
         panel.add(signUpButton);
+        panel.add(imageLabel);
+        panel.add(clickableLabel);
 
         
         
 
-        JLabel background = new JLabel(bgImg);
-        background.setBounds(0, 0, 1000, 1000);
-        background.setLayout(null);
-        // frame.add(background);
-        frame.setIconImage(bgImg.getImage());
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setSize(1000, 800);
         frame.setLayout(new GridBagLayout());
+        frame.getContentPane().setBackground(new Color(0x99ccff));
+        // panel.setBackground(Color.magenta);
+        
+
+
         GridBagConstraints gbc = new GridBagConstraints();
         
         gbc.gridx = 0; 
@@ -132,7 +161,7 @@ public class LoginPage implements ActionListener {
             userPasswordField.setText("");
 
             loginInfoNew.put(ID, Password);
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter("team-project-team-1/loginSystem/Book1.csv", true))) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter("loginSystem/Book1.csv", true))) {
                 bw.newLine();
                 bw.append(ID + "," + Password);
                 
