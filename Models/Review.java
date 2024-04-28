@@ -2,11 +2,13 @@ package Models;
 
 public class Review {
     private User user;
-    private String Content;
+    private String content;
+    private double rating;
 
-    protected Review(User user, String content) {
+    protected Review(User user, String content, double rating) {
         this.user = user;
-        Content = content;
+        this.content = content;
+        this.rating = rating;
     }
 
     public void setUser(User user) {
@@ -14,7 +16,11 @@ public class Review {
     }
     
     public void setContent(String content) {
-        Content = content;
+        this.content = content;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     public User getUser() {
@@ -22,6 +28,10 @@ public class Review {
     }
 
     public String getContent() {
-        return Content;
+        return content;
+    }
+
+    public double getRating() {
+        return rating;
     }
 }
