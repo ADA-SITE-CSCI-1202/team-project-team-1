@@ -3,6 +3,8 @@ package Models;
 public class User {
     private String Username;
     private String Password;
+    
+    public User() {}
 
     protected User(String username, String password) {
         Username = username;
