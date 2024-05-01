@@ -26,7 +26,7 @@ public class UserView {
     JPanel containerPanel = new JPanel(new BorderLayout());
     JPanel panel = new JPanel(new BorderLayout());
     JPanel buttonsPanel = new JPanel(new GridLayout(2, 1));
-    JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+    JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
     JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     
     ImageIcon libraryIcon = new ImageIcon("Pages/assets/online-library.png");
