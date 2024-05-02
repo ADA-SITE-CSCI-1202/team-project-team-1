@@ -1,0 +1,159 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+class Book {
+    String title;
+    String author;
+    int rating;
+    String date;
+    String status;
+    String startDate;
+    String endDate;
+
+    public Book(String title, String author, int rating, String date, String status, String startDate, String endDate) {
+        this.title = title;
+        this.author = author;
+        this.rating = rating;
+        this.date = date;
+        this.status = status;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+  
+
+}
+
+public class Filtering {
+    private List<Book> books;
+    private Comparator<Book> currentComparator;
+
+    public Filtering() {
+        books = new ArrayList<>();
+    }
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
+
+    public List<Book> filterAndSort(String sortBy, boolean ascending) {
+        Comparator<Book> comparator;
+
+        switch (sortBy) {
+            case "title":
+                comparator = Comparator.comparing(Book::getTitle);
+                break;
+            case "author":
+                comparator = Comparator.comparing(Book::getAuthor);
+                break;
+            case "rating":
+                comparator = Comparator.comparingInt(Book::getRating);
+                break;
+            case "status":
+                comparator = Comparator.comparing(Book::getStatus);
+                break;
+            case "startDate":
+                comparator = Comparator.comparing(Book::getStartDate);
+                break;
+            case "endDate":
+                comparator = Comparator.comparing(Book::getEndDate);
+                break;
+            default:
+                comparator = Comparator.comparing(Book::getTitle);
+        }
+
+        if (currentComparator == comparator) {
+            ascending = !ascending;
+        }
+
+        currentComparator = comparator;
+
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+
+        Collections.sort(books, comparator);
+
+        return books;
+    }
+
+    public static void main(String[] args) {
+        Filtering manager = new Filtering();
+        manager.addBook(new Book("Book1", "Author1", 4, "2022-01-01", "Completed", "2021-12-01", "2022-01-15"));
+        manager.addBook(new Book("Book2", "Author2", 5, "2022-01-15", "Ongoing", "2022-01-01", ""));
+        manager.addBook(new Book("Book3", "Author3", 3, "2022-02-01", "Not Started", "", ""));
+
+        List<Book> sortedBooks = manager.filterAndSort("title", true);
+        for (Book book : sortedBooks) {
+            System.out.println(book.title + " by " + book.author);
+        }
+
+        sortedBooks = manager.filterAndSort("title", false);
+        for (Book book : sortedBooks) {
+            System.out.println(book.title + " by " + book.author);
+        }
+
+        sortedBooks = manager.filterAndSort("author", true);
+        for (Book book : sortedBooks) {
+            System.out.println(book.title + " by " + book.author);
+        }
+    }
+}
