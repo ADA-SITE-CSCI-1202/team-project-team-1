@@ -7,6 +7,8 @@ public class Book {
     private String Author;
     private float Rating;
     private List<Review> Reviews;
+
+    public Book(String title, String author) { Title = title; Author = author; }
     
     protected Book(String title, String author, float rating, List<Review> reviews) {
         Title = title;
