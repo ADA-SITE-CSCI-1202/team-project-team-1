@@ -18,16 +18,49 @@ import javax.swing.event.DocumentListener;
 
 import java.awt.event.MouseEvent;
 
+    class BlankInputException extends IllegalArgumentException {
+        public BlankInputException() {
+            super("Empty Blanks");
+            JOptionPane.showMessageDialog(null, "Please, fill out all the blanks! ", "Warning", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    class InvalidUsernameLengthException extends IllegalArgumentException {
+        public InvalidUsernameLengthException() {
+            super("Username out of Criteria");
+            JOptionPane.showMessageDialog(null, "Username should be between 5 and 15 characters! ", "Warning", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    class InvalidPasswordFormatException extends IllegalArgumentException {
+        public InvalidPasswordFormatException() {
+            super("Password out of Criteria");
+            JOptionPane.showMessageDialog(null, "Password should contain at least 8 characters, including at least 1 Uppercase, 1 Lowercase letter, and 1 number ", "Warning", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    class PasswordMismatchException extends IllegalStateException {
+        public PasswordMismatchException() {
+            super("Passwords Do Not Match");   
+            JOptionPane.showMessageDialog(null, "Passwords should be the same", "Warning", JOptionPane.ERROR_MESSAGE);     
+        }
+    }
+    
+    class DuplicateUsernameException extends RuntimeException {
+        public DuplicateUsernameException() {
+            super("Duplicate Username");
+            JOptionPane.showMessageDialog(null, "Username Already Exists", "Warning", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 public class SignUpPage extends LoginPage{
     JPasswordField AgainPasswordField = new JPasswordField();
 
     JLabel AgainPasswordLabel = new JLabel("Password");
+    JLabel newClickableLabel = new JLabel("Go Back");
 
     JButton signUpButton = new JButton("Sign Up");
 
-    JLabel newClickableLabel = new JLabel("Go Back");
-
-    
 
     public SignUpPage(HashMap<String, String> loginInfo, JFrame loginFrame) {
         super(loginInfo);
@@ -73,15 +106,25 @@ public class SignUpPage extends LoginPage{
             String AgainPassword = String.valueOf(AgainPasswordField.getPassword());
             System.out.println(ID);
 
-            try {
-                if (ID.length() < 1 || Password.length() < 1 || AgainPassword.length() < 1) {
-                    JOptionPane.showMessageDialog(null, "Please, fill out all the blanks! ", "Warning", JOptionPane.ERROR_MESSAGE);
-                    throw new Exception("bla bla");
+            try { 
+                if (ID.length() < 1 || Password.length() < 1 || AgainPassword.length() < 1) { 
+                    throw new BlankInputException(); // if user pushs signup button without entering anything, it should give an error
+                }
+
+                if (ID.length() < 5 || ID.length() > 15 ) {
+                    throw new InvalidUsernameLengthException(); //if username length is not between 5 and 15 characters (5 and 15 is okay), give an error
+                }
+
+                if (Password.length() < 8 || !Password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$")){
+                    throw new InvalidPasswordFormatException(); // if password is shorter than 8 characters or does not contain at least 
+                }                                               // 1 uppercase, lowercase letter and number, give an error
+
+                if (!Password.equals(AgainPassword)){
+                    throw new PasswordMismatchException(); //if second password and first password are not the same, give an error
                 }
         
                 if (loginInfo.containsKey(ID)) {
-                    JOptionPane.showMessageDialog(null, "Username Already Exists", "Warning", JOptionPane.ERROR_MESSAGE);
-                    throw new Exception();
+                    throw new DuplicateUsernameException(); //if username already exists, give an error
                 }
     
     
@@ -89,7 +132,6 @@ public class SignUpPage extends LoginPage{
                 userPasswordField.setText("");
                 AgainPasswordField.setText("");
     
-                if (Password.equals(AgainPassword)) {
                     loginInfo.put(ID, Password);
                     try (BufferedWriter bw = new BufferedWriter(new FileWriter("loginSystem/Book1.csv", true))) {
                         bw.newLine();
@@ -99,10 +141,6 @@ public class SignUpPage extends LoginPage{
                     } catch (Exception ex) {
                         ex.printStackTrace();   
                     }
-                }  
-                else{
-                    JOptionPane.showMessageDialog(null, "Passwords do not match!", "Warning", JOptionPane.ERROR_MESSAGE);
-                }
                 
             } catch (Exception ex) {
                 ex.printStackTrace();

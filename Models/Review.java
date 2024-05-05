@@ -4,7 +4,7 @@ public class Review {
     private User user;
     private String Content;
 
-    protected Review(User user, String content) {
+    public Review(User user, String content) {
         this.user = user;
         Content = content;
     }

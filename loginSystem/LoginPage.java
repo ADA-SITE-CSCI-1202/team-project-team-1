@@ -27,6 +27,8 @@ import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import Pages.AdminView;
+
 public class LoginPage {
     JFrame frame = new JFrame();
 
@@ -141,17 +143,22 @@ public class LoginPage {
 
             try {
                 if(ID.length() < 1 || Password.length() < 1){
-                    JOptionPane.showMessageDialog(null, "Please, fill out all the blanks! ", "Warning", JOptionPane.ERROR_MESSAGE);
-                    throw new Exception("bla bla");
+                    throw new BlankInputException();
+                }
+
+                if (ID.equals("admin") && Password.equals("admin")) {
+                    frame.dispose();
+                    new AdminView();
                 }
     
                 if (loginInfo.containsKey(ID)) {
                     if (loginInfo.get(ID).equals(Password)) {
                         frame.dispose();
-                        new WelcomePage(ID, Password);
+                        new WelcomePage(ID, Password); //should be: new UserView(ID, Password);
                     }
                     else{
                         JOptionPane.showMessageDialog(null, "Wrong Password! ", "Warning", JOptionPane.ERROR_MESSAGE);
+                        throw new Exception("Wrong Password");
                     }
                 }
                 else{

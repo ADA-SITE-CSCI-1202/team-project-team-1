@@ -17,6 +17,7 @@ public class ReviewPage {
         frame.setSize(800, 670);
         frame.setLayout(null);
         frame.setResizable(false); 
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         ImageIcon userIcon = new ImageIcon("reviewSystem/User_Icon.png"); //Gets and sets user icon 
         Image iconImg = userIcon.getImage().getScaledInstance(125, 120, 500); 
