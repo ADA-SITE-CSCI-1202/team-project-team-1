@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CSVMananger {
-    private static final String CSV_FILE = "../Data/brodsky.csv";
+public abstract class CSVMananger {
+    private static final String CSV_FILE = "Data/brodsky.csv";
     
     public CSVMananger() {}
 
@@ -82,4 +82,5 @@ public class CSVMananger {
             e.printStackTrace();
         }
     }
+    
 }
