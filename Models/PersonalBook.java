@@ -3,7 +3,7 @@ package Models;
 import java.util.Date;
 import java.util.List;
 
-public class PersonalBook extends Book{
+public class PersonalBook extends GeneralBook{
     private boolean Status;
     private int TimeSpent;
     private Date StartDate;
