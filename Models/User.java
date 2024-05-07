@@ -6,7 +6,7 @@ public class User {
     
     public User() {}
 
-    protected User(String username, String password) {
+    public User(String username, String password) {
         Username = username;
         Password = password;
     }
@@ -25,4 +25,14 @@ public class User {
     public String getPassword() {
         return Password;
     }
+
+    public void setRating(double rating) {
+        this.Rating = rating;
+    }
+
+    public double getRating() {
+        return Rating;
+    }
+
+    
 }
