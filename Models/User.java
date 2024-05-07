@@ -3,7 +3,8 @@ package Models;
 public class User {
     private String Username;
     private String Password;
-    private double Rating = 4.7;
+    
+    public User() {}
 
     public User(String username, String password) {
         Username = username;
