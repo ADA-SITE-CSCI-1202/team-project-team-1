@@ -4,13 +4,13 @@ import java.util.List;
 
 public class GeneralBook extends Book{
     private float Rating;
-    private List<Review> Reviews;
+    private List<String> Reviews;
 
     public GeneralBook(String title, String author) {
         super(title, author);
     }
 
-    public GeneralBook(String title, String author, float rating, List<Review> reviews) {
+    public GeneralBook(String title, String author, float rating, List<String> reviews) {
         super(title, author);
         
         Rating = rating;
@@ -21,7 +21,7 @@ public class GeneralBook extends Book{
         Rating = rating;
     }
 
-    public void setReviews(List<Review> reviews) {
+    public void setReviews(List<String> reviews) {
         Reviews = reviews;
     }
 
@@ -29,7 +29,7 @@ public class GeneralBook extends Book{
         return Rating;
     }
 
-    public List<Review> getReviews() {
+    public List<String> getReviews() {
         return Reviews;
     }
     

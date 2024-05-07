@@ -3,9 +3,9 @@ package Models;
 public class Review {
     private User user;
     private String content;
-    private double rating;
+    private int rating;
 
-    protected Review(User user, String content, double rating) {
+    protected Review(User user, String content, int rating) {
         this.user = user;
         this.content = content;
         this.rating = rating;
@@ -19,7 +19,7 @@ public class Review {
         this.content = content;
     }
 
-    public void setRating(double rating) {
+    public void setRating(int rating) {
         this.rating = rating;
     }
 
