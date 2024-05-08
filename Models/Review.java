@@ -34,4 +34,9 @@ public class Review {
     public double getRating() {
         return rating;
     }
+
+    @Override
+    public String toString() {
+        return "Username: " + getUser() + " Review: " + getContent() + " Rating: " + getRating() + "\n";
+    }
 }

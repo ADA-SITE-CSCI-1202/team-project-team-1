@@ -78,13 +78,25 @@ public abstract class CSVMananger {
     private static List<Review> parseReviews(String reviewString) {
         List<Review> reviews = new ArrayList<>();
 
-        String[] reviewLines = reviewString.split("\n");
+        // Remove leading and trailing brackets
+        reviewString = reviewString.substring(1, reviewString.length() - 1);
 
-        for (String reviewLine : reviewLines) {
-            String[] parts = reviewLine.split(",", -1);
+        // Split review entries by ".(" and remove the closing parenthesis from the last entry
+        String[] reviewEntries = reviewString.split("\\)\\.\\(");
+        if (reviewEntries.length > 0) {
+            reviewEntries[reviewEntries.length - 1] = reviewEntries[reviewEntries.length - 1].substring(0, reviewEntries[reviewEntries.length - 1].length() - 1);
+        }
+
+        for (String entry : reviewEntries) {
+            String[] parts = entry.split("\\.");
+
             String user = parts[0];
-            String content = parts[1];
-            int rating = Integer.parseInt(parts[2]);
+            if (user.startsWith("(")) {
+                user = user.substring(1); // Remove leading bracket
+            }
+
+            String content = (parts.length > 1) ? parts[1] : "";
+            int rating = (parts.length > 2 && !parts[2].isEmpty()) ? Integer.parseInt(parts[2]) : 0;
 
             reviews.add(new Review(user, content, rating));
         }
@@ -94,9 +106,57 @@ public abstract class CSVMananger {
 
     public static void addToCsv(Book book) {
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE, true))) {
-            String line = String.format("%s,%s", book.getTitle(), book.getAuthor());
+            String line = String.format("%s,%s,", book.getTitle(), book.getAuthor());
+            
             writer.write(line);
             writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addReviewToCsv(String title, Review review){
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE));
+            List<String> lines = new ArrayList<>();
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",", -1);
+
+                if (parts[0].equals(title)) {
+                    StringBuilder updatedLine = new StringBuilder(parts[0] + "," + parts[1] + ",");
+
+                    String reviewsString = parts[2];
+
+                    if (!reviewsString.equals("")) {
+                        // If there are existing reviews, append the new review
+                        updatedLine.append(reviewsString.substring(0, reviewsString.length() - 1)); // Remove the closing bracket
+                        updatedLine.append(".(")
+                                .append(review.getUser()).append(".")
+                                .append(review.getContent()).append(".")
+                                .append(review.getRating())
+                                .append(")");
+                    } else {
+                        // If there are no existing reviews, create a new list of reviews
+                        updatedLine.append("[(")
+                                .append(review.getUser()).append(".")
+                                .append(review.getContent()).append(".")
+                                .append(review.getRating())
+                                .append(")]");
+                    }
+                    line = updatedLine.toString();
+                }
+                lines.add(line);
+            }
+            reader.close();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE));
+            for (String l : lines) {
+                writer.write(l + "\n");
+            }
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,14 +166,38 @@ public abstract class CSVMananger {
         List<GeneralBook> books = readFromCsv();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
-            for (Book book : books) {
+            writer.write("Title,Author,Reviews");
+            writer.newLine();
+            
+            for (GeneralBook book : books) {
                 if (book.getTitle().equals(originalName)) {
                     book.setTitle(newBook.getTitle());
                     book.setAuthor(newBook.getAuthor());
+                    // Update reviews if necessary
                 }
-
-                String line = String.format("%s,%s", book.getTitle(), book.getAuthor());
-                writer.write(line);
+    
+                StringBuilder lineBuilder = new StringBuilder();
+                lineBuilder.append(book.getTitle()).append(",");
+                lineBuilder.append(book.getAuthor()).append(",");
+                
+                // Append reviews
+                if (book instanceof GeneralBook) {
+                    GeneralBook generalBook = (GeneralBook) book;
+                    List<Review> reviews = generalBook.getReviews();
+                    if (reviews != null && !reviews.isEmpty()) {
+                        lineBuilder.append("[");
+                        for (Review review : reviews) {
+                            lineBuilder.append("(")
+                                       .append(review.getUser()).append(".")
+                                       .append(review.getContent()).append(".")
+                                       .append(review.getRating())
+                                       .append(").");
+                        }
+                        lineBuilder.deleteCharAt(lineBuilder.length() - 1); // Remove the trailing period
+                        lineBuilder.append("]");
+                    }
+                }
+                writer.write(lineBuilder.toString());
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -122,15 +206,36 @@ public abstract class CSVMananger {
     }
 
     public static void removeFromCsv(String bookName) {
-        List<GeneralBook> books = readFromCsv();
+        List<String> linesToRemove = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 1 && parts[0].equals(bookName)) {
+                    linesToRemove.add(line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<String> allLines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                allLines.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        allLines.removeAll(linesToRemove);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
-            for (Book book : books) {
-                if (!book.getTitle().equals(bookName)) {
-                    String line = String.format("%s,%s", book.getTitle(), book.getAuthor());
-                    writer.write(line);
-                    writer.newLine();
-                }
+            for (String line : allLines) {
+                writer.write(line);
+                writer.newLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,7 +243,7 @@ public abstract class CSVMananger {
     }
 
     public static void main(String[] args) {
-        initialCreation();
+        editInCsv(new Book("Emin", "EM"), "Farhad");
     }
     
 }
