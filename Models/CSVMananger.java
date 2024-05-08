@@ -11,27 +11,40 @@ import java.util.List;
 public abstract class CSVMananger {
     private static final String CSV_FILE = "Data/general.csv";
     private static final String Brodsky_FILE = "Data/brodsky.csv";
-    
-    public CSVMananger() {}
 
     public static void initialCreation() {
         try (BufferedReader reader = new BufferedReader(new FileReader(Brodsky_FILE));
              BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
             
+            writer.write("Title,Author,Reviews");
+            writer.newLine();
+
+            boolean isFirstLine = true;
+        
             String line;
-            
+        
             while ((line = reader.readLine()) != null) {
+                if (isFirstLine) {
+                    isFirstLine = false;
+                    continue;
+                }
+
                 String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-
+        
                 String[] titles = parts[0].split(",\\s*");
-                String author = (parts.length > 1 && !parts[1].isEmpty()) ? parts[1] : "N/A";
-
+                String author = (parts.length > 1 && !parts[1].isEmpty()) ? parts[1] : "Unknown";
+        
                 for (String title : titles) {
                     title = title.replaceAll("^\"|\"$", "");
-                    writer.write(title + "," + author);
+                    
+                    if (title.isEmpty()) {
+                        title = "Unknown";
+                    }
+
+                    writer.write(title + "," + author + ",");
                     writer.newLine();
                 }
-            }
+            }    
         
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,15 +63,33 @@ public abstract class CSVMananger {
                 String[] parts = line.split(",", -1);
                 
                 String title = parts[0];
-                String author = (parts.length > 1 && !parts[1].isEmpty()) ? parts[1] : "N/A";
+                String author = parts[1];
+                List<Review> reviews = parseReviews(parts[2]);
                 
-                books.add(new GeneralBook(title, author));
+                books.add(new GeneralBook(title, author, reviews));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return books;
+    }
+
+    private static List<Review> parseReviews(String reviewString) {
+        List<Review> reviews = new ArrayList<>();
+
+        String[] reviewLines = reviewString.split("\n");
+
+        for (String reviewLine : reviewLines) {
+            String[] parts = reviewLine.split(",", -1);
+            String user = parts[0];
+            String content = parts[1];
+            int rating = Integer.parseInt(parts[2]);
+
+            reviews.add(new Review(user, content, rating));
+        }
+
+        return reviews;
     }
 
     public static void addToCsv(Book book) {
@@ -107,7 +138,7 @@ public abstract class CSVMananger {
     }
 
     public static void main(String[] args) {
-        System.out.println(readFromCsv().toString());
+        initialCreation();
     }
     
 }

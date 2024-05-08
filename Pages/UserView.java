@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import Models.User;
+import Pages.loginSystem.LoginMain;
 
 public class UserView {
     private User user;
@@ -97,6 +98,15 @@ public class UserView {
         logOut.setMargin(new Insets(0, 50, 0, 50));
         logOut.setBackground(Color.WHITE);
         logOut.setFont(new Font(null, Font.BOLD, 24));
+
+        logOut.addActionListener(e -> {
+            try {
+                frame.dispose();
+                new LoginMain();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
             
         topPanel.add(generalDB);
         topPanel.add(personalDB);

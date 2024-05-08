@@ -1,4 +1,4 @@
-package loginSystem;
+package Pages.loginSystem;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -85,6 +85,7 @@ public class SignUpPage extends LoginPage{
                 AgainPasswordLabel.setText(null);
             }
         });
+        
         AgainPasswordField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -94,8 +95,6 @@ public class SignUpPage extends LoginPage{
             public void changedUpdate(DocumentEvent e) {}
         });
         panel.add(AgainPasswordField);
-
-        
 
         signUpButton.setBounds(50, 275, 275, 40);
         panel.add(signUpButton);
@@ -127,13 +126,12 @@ public class SignUpPage extends LoginPage{
                     throw new DuplicateUsernameException(); //if username already exists, give an error
                 }
     
-    
                 userIDField.setText("");
                 userPasswordField.setText("");
                 AgainPasswordField.setText("");
     
                     loginInfo.put(ID, Password);
-                    try (BufferedWriter bw = new BufferedWriter(new FileWriter("loginSystem/Book1.csv", true))) {
+                    try (BufferedWriter bw = new BufferedWriter(new FileWriter("Data/accounts.csv", true))) {
                         bw.newLine();
                         bw.append(ID + "," + Password);
                         JOptionPane.showMessageDialog(null, "Signed Up, successfully", "Successful", JOptionPane.INFORMATION_MESSAGE);
@@ -148,11 +146,6 @@ public class SignUpPage extends LoginPage{
 
         });
 
-
-
-
-
-
         newClickableLabel.setForeground(Color.BLUE);
         newClickableLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -161,21 +154,11 @@ public class SignUpPage extends LoginPage{
             public void mouseClicked(MouseEvent e)  {  
                 frame.dispose();
                 loginFrame.setVisible(true);
-                
-
             }  
-        }); 
-
-
-        
+        });
 
         newClickableLabel.setBounds(160, 350, 150, 30);
-        panel.add(newClickableLabel);
-
-        
-
-        
-        
+        panel.add(newClickableLabel);  
     }
     
 }

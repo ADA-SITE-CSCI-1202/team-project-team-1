@@ -1,4 +1,4 @@
-package loginSystem;
+package Pages.loginSystem;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -27,14 +27,16 @@ import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import Models.User;
 import Pages.AdminView;
+import Pages.UserView;
 
 public class LoginPage {
     JFrame frame = new JFrame();
 
     JPanel panel = new JPanel();
 
-    JLabel imageLabel = new JLabel(new ImageIcon("loginSystem/resized.png"));
+    JLabel imageLabel = new JLabel(new ImageIcon("Pages/assets/resized.png"));
     JLabel clickableLabel = new JLabel("New Here? Sign Up");
 
     JLabel userIDLabel = new JLabel("Username");
@@ -154,7 +156,7 @@ public class LoginPage {
                 if (loginInfo.containsKey(ID)) {
                     if (loginInfo.get(ID).equals(Password)) {
                         frame.dispose();
-                        new WelcomePage(ID, Password); //should be: new UserView(ID, Password);
+                        new UserView(new User(ID, Password)); //should be: new UserView(ID, Password);
                     }
                     else{
                         JOptionPane.showMessageDialog(null, "Wrong Password! ", "Warning", JOptionPane.ERROR_MESSAGE);

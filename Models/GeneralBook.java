@@ -3,33 +3,22 @@ package Models;
 import java.util.List;
 
 public class GeneralBook extends Book{
-    private float Rating;
-    private List<String> Reviews;
+    private List<Review> Reviews;
 
     public GeneralBook(String title, String author) {
         super(title, author);
     }
 
-    public GeneralBook(String title, String author, float rating, List<String> reviews) {
+    public GeneralBook(String title, String author, List<Review> reviews) {
         super(title, author);
-        
-        Rating = rating;
         Reviews = reviews;
     }
 
-    public void setRating(float rating) {
-        Rating = rating;
-    }
-
-    public void setReviews(List<String> reviews) {
+    public void setReviews(List<Review> reviews) {
         Reviews = reviews;
     }
 
-    public float getRating() {
-        return Rating;
-    }
-
-    public List<String> getReviews() {
+    public List<Review> getReviews() {
         return Reviews;
     }
     

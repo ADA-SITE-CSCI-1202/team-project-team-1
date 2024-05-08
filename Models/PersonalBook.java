@@ -9,8 +9,8 @@ public class PersonalBook extends GeneralBook{
     private Date StartDate;
     private Date EndDate;
 
-    protected PersonalBook(String title, String author, float rating, List<String> reviews, boolean status, int timeSpent, Date startDate, Date endDate) {
-        super(title, author, rating, reviews);
+    protected PersonalBook(String title, String author, List<Review> reviews, boolean status, int timeSpent, Date startDate, Date endDate) {
+        super(title, author, reviews);
         
         Status = status;
         TimeSpent = timeSpent;

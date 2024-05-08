@@ -7,15 +7,24 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+
+import org.w3c.dom.events.MouseEvent;
+
+import Models.User;
+import Pages.loginSystem.LoginMain;
+import Pages.loginSystem.SignUpPage;
 
 public class AdminView {
     JFrame frame = new JFrame();
@@ -84,6 +93,15 @@ public class AdminView {
         generalDB.setForeground(new Color(0xdb6d13));
         generalDB.setIconTextGap(20);
 
+        generalDB.addActionListener(e -> {
+            try {
+                frame.dispose();
+                new();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
         logOut.setPreferredSize(new Dimension(250, 150));
         logOut.setBorder(compoundBorder);
         logOut.setFocusPainted(false);
@@ -91,6 +109,15 @@ public class AdminView {
         logOut.setBackground(Color.WHITE);
         logOut.setFont(new Font(null, Font.BOLD, 24));
         logOut.setIconTextGap(20);
+
+        logOut.addActionListener(e -> {
+            try {
+                frame.dispose();
+                new LoginMain();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
             
         topPanel.add(generalDB);
         bottomPanel.add(logOut);

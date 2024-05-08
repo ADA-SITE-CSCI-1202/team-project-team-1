@@ -26,13 +26,12 @@ public class User {
         return Password;
     }
 
-    public void setRating(double rating) {
-        this.Rating = rating;
+    public void giveRating() {
+        
     }
 
-    public double getRating() {
-        return Rating;
+    @Override
+    public String toString() {
+        return "\nUsername: " + getUsername() + ". Password: " + getPassword();
     }
-
-    
 }
