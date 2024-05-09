@@ -5,6 +5,8 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
+import Models.Book;
+
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.Month;
@@ -12,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 public class BookProfileForm extends JFrame {
 
-    public BookProfileForm() {
+    public BookProfileForm(Book book) {
         setTitle("Profile Book Form");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -23,8 +25,8 @@ public class BookProfileForm extends JFrame {
         constraints.insets = new Insets(20, 50, 20, 50);
 
         // Title and Author (as labels now)
-        addLabelAndFixedLabel("Title:", "Mahabharata (Bhagavad Gita)", 0);
-        addLabelAndFixedLabel("Author:", "Unknown", 1);
+        addLabelAndFixedLabel("Title:", book.getTitle(), 0);
+        addLabelAndFixedLabel("Author:", book.getAuthor(), 1);
 
         // Time Spent
         JTextField timefield = new JTextField();
@@ -260,9 +262,5 @@ public class BookProfileForm extends JFrame {
         add(datePanel, constraints);
     }
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            new BookProfileForm();
-        });
-    }
+
 }
