@@ -27,14 +27,16 @@ import Models.PersonalManager;
     class BlankInputException extends IllegalArgumentException {
         public BlankInputException() {
             super("Empty Blanks");
-            JOptionPane.showMessageDialog(null, "Please, fill out all the blanks! ", "Warning", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please, fill out all the blanks! ", 
+            "Warning", JOptionPane.ERROR_MESSAGE);
         }
     }
     
     class InvalidUsernameLengthException extends IllegalArgumentException {
         public InvalidUsernameLengthException() {
             super("Username out of Criteria");
-            JOptionPane.showMessageDialog(null, "Username should be between 5 and 15 characters! ", "Warning", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Username should be between 5 and 15 characters! ", 
+            "Warning", JOptionPane.ERROR_MESSAGE);
         }
     }
     

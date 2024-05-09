@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -14,6 +16,7 @@ import java.awt.event.WindowListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
+import java.awt.print.Book;
 import java.text.AttributedString;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +32,8 @@ import javax.swing.table.TableRowSorter;
 import Models.Review;
 import Models.User;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -51,6 +56,8 @@ public class GeneralDatabase{
     TableRowSorter rowSorter;
     String column[];
     String data[][];
+    JButton addButton;
+    ActionListener listener;
 
     public <M> String arrayListToString(ArrayList<M> list) { //Reads arraylist, as in case review list, then converts it to string in a formatted way
         return list.stream()
@@ -60,7 +67,7 @@ public class GeneralDatabase{
 
     public GeneralDatabase() {
  
-        column = new String[]{"Title","Author","Rating", "Reviews", "Action"}; 
+        column = new String[]{"Title","Author","Rating", "Reviews"}; 
         data = new String[][]{ {"101","Amit","670000", arrayListToString(new ArrayList<>(Arrays.asList("we", "s"))), "Add"},    
         }; //Murad will read and write from csv to here
 
@@ -84,15 +91,18 @@ public class GeneralDatabase{
        
 
         //The following line is to add a new row and can be used in adminview or personal db
-        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList), "Add" });
-        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList), "Add" });
+        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList)});
+        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList)});
 
         table.addMouseListener(new MouseAdapter() { 
             public void mouseClicked(MouseEvent e) {
                 int row = table.rowAtPoint(e.getPoint());
                 int column = table.columnAtPoint(e.getPoint());
 
-                if (row != -1 && column == 3) {
+                if (row == -1) table.clearSelection();
+
+                else if (row != -1 && column == 3) {
+                    table.clearSelection();
                     Rectangle cellRect = table.getCellRect(row, column, true);
                     String text = table.getValueAt(row, column).toString();
                     FontMetrics fm = table.getFontMetrics(table.getFont());
@@ -127,21 +137,38 @@ public class GeneralDatabase{
 
                         yStart += layout.getAscent() + layout.getDescent() + layout.getLeading(); // Adjust Y position for the next line
                     }
-                }
-
-                else if (row != -1 && column == table.getColumnModel().getColumnIndex("Action") && column == 4){ //When add is pushed, user should be able to add the book to the personal db
-                    LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
-                                                        .mapToObj(col -> table.getValueAt(row, col))
-                                                        .toArray()));
-                    JOptionPane.showMessageDialog(null, "The Book Successfully Added to the Personal DataBase! ", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-                                            
-                    System.out.println(list); //Murad should add this to personal database, instead of printing
-                    
-
-                }
+                } 
             }
         });
+
+        frame.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                table.clearSelection();
+            }
+        });
+
+        addButton = new JButton("Add");
+        listener = e -> {
+            int row = table.getSelectedRow();
+            table.clearSelection();
+            try {
+                LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
+                .mapToObj(col -> table.getValueAt(row, col))
+                .toArray()));
+                Models.Book book = new Models.Book((String)list.get(0), (String)list.get(1));
+                new BookProfileForm(book);
+                System.out.println(list); //Murad should add this to personal database, instead of printing
+            } catch (IndexOutOfBoundsException ex) {
+                JOptionPane.showMessageDialog(null, "You Should Select a Book! ", "Warning", JOptionPane.ERROR_MESSAGE);
+            }            
+        };
+
+        addButton.addActionListener(listener);
+        addButton.setBounds(900, 105, 100, 35);
+        frame.add(addButton);
+
+
 
         JLabel searchLabel = new JLabel("Search");
         searchLabel.setBounds(340, 100, 100, 40);
@@ -199,6 +226,9 @@ public class GeneralDatabase{
         scrollPane.setVerticalScrollBarPolicy(
         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
 
+        table.setFillsViewportHeight(true); // This makes sure empty space below rows does not behave as a clickable row.
+
+
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.setColumnSelectionAllowed(false);
 
@@ -208,7 +238,7 @@ public class GeneralDatabase{
 
         table.setCellSelectionEnabled(true);
         table.setColumnSelectionAllowed(false);
-        table.setRowSelectionAllowed(false);
+        table.setRowSelectionAllowed(true);
 
 
 
@@ -263,15 +293,15 @@ public class GeneralDatabase{
             adjustRowHeight(table, row, column);
 
             
-            if (column == table.getColumnModel().getColumnIndex("Action")){
-                this.setFont(new Font("Arial", Font.BOLD, 15));
-                this.setForeground(new Color(2, 48, 32));
+            // if (column == table.getColumnModel().getColumnIndex("Action")){
+            //     this.setFont(new Font("Arial", Font.BOLD, 15));
+            //     this.setForeground(new Color(2, 48, 32));
                 
-            }
-            else {
+            // }
+            // else {
                 this.setFont(new Font("Arial", 0, 15));
                 this.setForeground(Color.black);
-            }
+            // }
                 
 
             if (column == table.getColumnModel().getColumnIndex("Reviews")){
