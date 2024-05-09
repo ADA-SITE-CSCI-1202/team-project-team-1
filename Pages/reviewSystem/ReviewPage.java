@@ -1,23 +1,35 @@
 package Pages.reviewSystem;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import Models.Book;
 import Models.Review;
 import Models.User;
 
 public class ReviewPage {
-    public ReviewPage (Book book, Review review){
-        JFrame frame = new JFrame();
+    public JFrame frame;
+    public JTextArea reviewTextArea;
+
+    public ReviewPage (Book book, Review review, Boolean isEditable, JTable table, int column, int row, User user){
+        String content = (review != null) ? review.getContent() : "";
+        String userNameString = user.getUsername(); 
+        frame = new JFrame();
         frame.setSize(800, 670);
         frame.setLayout(null);
         frame.setResizable(false); 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         ImageIcon userIcon = new ImageIcon("reviewSystem/User_Icon.png"); //Gets and sets user icon 
         Image iconImg = userIcon.getImage().getScaledInstance(125, 120, 500); 
@@ -25,7 +37,7 @@ public class ReviewPage {
         iconLabel.setBounds(20, 50, 130, 120);
         frame.add(iconLabel);
 
-        JLabel userName = new JLabel(review.getUser().getUsername()); //Takes the username from review object and puts it 
+        JLabel userName = new JLabel(userNameString); //Takes the username from review object and puts it 
         userName.setFont(new Font("Arial", Font.PLAIN, 45));
         userName.setBounds(190, 50, 200, 70);
         frame.add(userName);
@@ -41,11 +53,31 @@ public class ReviewPage {
         starLabel.setBounds(302, 130, 35, 35);
         frame.add(starLabel);
 
-        JLabel ratingLabel = new JLabel(String.valueOf(review.getUser().getRating())); //Takes the rating from review object and puts it 
-        userName.setFont(new Font("Arial", Font.PLAIN, 45));
+        if (!isEditable){
+        JLabel ratingLabel = new JLabel(String.valueOf(5)); //Takes the rating from review object and puts it // eslinde olmali: i: review.getRating()
         ratingLabel.setBounds(340, 135, 50, 30);
         ratingLabel.setFont(new Font("Arial", 0, 20));
         frame.add(ratingLabel);
+        }
+        else{
+            JComboBox<Integer> starBox = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
+            String ratingValue = (String)table.getValueAt(row, table.getColumnModel().getColumnIndex("User Rating"));
+            if ("12345".contains(ratingValue))
+                starBox.setSelectedIndex(Integer.parseInt(ratingValue) - 1);;            
+            starBox.setBounds(340, 137, 65, 30);
+            starBox.setFont(new Font("Arial", 0, 17));
+            
+            starBox.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        Integer selectedItem = (Integer) e.getItem();
+                        table.setValueAt(selectedItem, row, table.getColumnModel().getColumnIndex("User Rating"));
+                    }
+                }
+            });
+            frame.add(starBox);
+
+        }
 
         ImageIcon bookIcon = new ImageIcon("reviewSystem/Book.png"); //Gets and sets the image(icon) of the book
         Image bookImg = bookIcon.getImage().getScaledInstance(450, 700, 500);
@@ -103,16 +135,63 @@ public class ReviewPage {
         reviewTag.setBounds(120, 30, 432, 100);
         reviewTag.setHorizontalAlignment(JLabel.CENTER);
 
-        JLabel reviewTextLabel = new JLabel("<html>" +    // Gets and sets the review text, 
-            review.getContent()                           // the functionality of html tags is that: if the line is longer than width, makes it go the next line
-            + "</html>"); //no more than 300 characters
-        reviewTextLabel.setBounds(130, 110, 415, 300);
-        reviewTextLabel.setFont(new Font("Times New Roman", 0, 25));
-        reviewTextLabel.setVerticalAlignment(JLabel.TOP);
-        reviewTextLabel.setHorizontalAlignment(JLabel.CENTER);
+        if (!isEditable){
+            JLabel reviewTextLabel = new JLabel("<html>" +    // Gets and sets the review text, 
+                content                          // the functionality of html tags is that: if the line is longer than width, makes it go the next line
+                + "</html>"); //no more than 300 characters
+            reviewTextLabel.setBounds(130, 110, 415, 300);
+            reviewTextLabel.setFont(new Font("Times New Roman", 0, 25));
+            reviewTextLabel.setVerticalAlignment(JLabel.TOP);
+            reviewTextLabel.setHorizontalAlignment(JLabel.CENTER);
+
+            boardLabel.add(reviewTextLabel);
+        }
+
+        else{
+            reviewTextArea = new JTextArea(content); //no more than 300 characters
+                
+            reviewTextArea.setFont(new Font("Times New Roman", 0, 25));
+            reviewTextArea.setLineWrap(true);
+            reviewTextArea.setWrapStyleWord(true);
+
+            reviewTextArea.getDocument().addDocumentListener(new DocumentListener() {
+                public void insertUpdate(DocumentEvent e) {
+                    textChanged();
+                }
+    
+                public void removeUpdate(DocumentEvent e) {
+                    textChanged();
+                }
+    
+                public void changedUpdate(DocumentEvent e) {
+                    textChanged();
+                }
+    
+                private void textChanged() {
+                    String x = reviewTextArea.getText();
+                    String str = (x.length() >= 10) ? x.substring(0, 10) : x;
+                    table.setValueAt(str + "...\nClick To Read More", row, column);
+
+                }
+            });
+
+
+            JScrollPane reviewPane = new JScrollPane(reviewTextArea);
+
+            reviewPane.setVerticalScrollBarPolicy(
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
+
+            reviewPane.setBounds(130, 110, 415, 300);
+
+            
+
+            
+
+            boardLabel.add(reviewPane);
+        }
 
         boardLabel.add(reviewTag);
-        boardLabel.add(reviewTextLabel);
+        
 
         frame.add(bookLabel);
         frame.add(boardLabel);
@@ -120,8 +199,4 @@ public class ReviewPage {
         frame.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new ReviewPage(null, 
-        new Review(new User("Farhad", "567156"), "One of the most beautiful books ever!"));
-    }
 }

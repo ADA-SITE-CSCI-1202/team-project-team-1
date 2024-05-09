@@ -1,4 +1,5 @@
 package Pages;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -20,11 +21,11 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
-
 import Models.Review;
 import Models.User;
 
@@ -37,14 +38,19 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class GeneralDatabase{
     JFrame frame = new JFrame();
     JPanel panel = new JPanel();
+    JScrollPane scrollPane;
     JTable table;
+    DefaultTableModel model;
     TableRowSorter rowSorter;
+    String column[];
+    String data[][];
 
     public <M> String arrayListToString(ArrayList<M> list) { //Reads arraylist, as in case review list, then converts it to string in a formatted way
         return list.stream()
@@ -52,17 +58,13 @@ public class GeneralDatabase{
                    .collect(Collectors.joining(", "));  // Customize delimiter here
     }
 
-
-
-
-    @SuppressWarnings("unchecked")
-    GeneralDatabase() {
+    public GeneralDatabase() {
  
-        Object column[]={"Title","Author","Rating", "Review", "Action"}; 
-        Object data[][]={ {"101","Amit","670000", arrayListToString(new ArrayList<>(Arrays.asList("we", "s"))), "Add"},    
+        column = new String[]{"Title","Author","Rating", "Reviews", "Action"}; 
+        data = new String[][]{ {"101","Amit","670000", arrayListToString(new ArrayList<>(Arrays.asList("we", "s"))), "Add"},    
         }; //Murad will read and write from csv to here
 
-        DefaultTableModel model = new DefaultTableModel(data, column); 
+        model = new DefaultTableModel(data, column); 
         table = new JTable(model){
             private static final long serialVersionUID = 1L;
 
@@ -74,13 +76,15 @@ public class GeneralDatabase{
 
 
         ArrayList<Review> reviewList= new ArrayList<>(Arrays.asList( //this is actually for writing personal db
-            new Review(new User("Farhad", "sss"), "Cox gozel", 5),
-            new Review(new User("Murad", "sss"), "Yaxsi kimi", 5),
-            new Review(new User("Ibrahim", "sss"), "Orta", 5)
+            new Review("Farhad", "Cox gozel", 5),
+            new Review("Murad", "Yaxsi kimi", 5),
+            new Review("Ibrahim", "Orta", 4),
+            new Review("Ibrahim", "Orta", 5)
         )); //Murad can pass like that(note that this is just as a framework to what it should look like)
        
 
         //The following line is to add a new row and can be used in adminview or personal db
+        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList), "Add" });
         model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList), "Add" });
 
         table.addMouseListener(new MouseAdapter() { 
@@ -98,7 +102,7 @@ public class GeneralDatabase{
                     AttributedString attrStr = new AttributedString(text);
                     LineBreakMeasurer measurer = new LineBreakMeasurer(attrStr.getIterator(), frc);
                     int xStart = cellRect.x + 2; // Start X position
-                    int yStart = cellRect.y; // Start Y position
+                    int yStart = cellRect.y + 5; // Start Y position
 
                     // Measure lines
                     while (measurer.getPosition() < text.length()) {
@@ -125,12 +129,15 @@ public class GeneralDatabase{
                     }
                 }
 
-                else if (row != -1 && column == 4){ //When add is pushed, user should be able to add the book to the personal db
+                else if (row != -1 && column == table.getColumnModel().getColumnIndex("Action") && column == 4){ //When add is pushed, user should be able to add the book to the personal db
                     LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
                                                         .mapToObj(col -> table.getValueAt(row, col))
                                                         .toArray()));
+                    JOptionPane.showMessageDialog(null, "The Book Successfully Added to the Personal DataBase! ", "Success", JOptionPane.INFORMATION_MESSAGE);
+
                                             
                     System.out.println(list); //Murad should add this to personal database, instead of printing
+                    
 
                 }
             }
@@ -186,7 +193,7 @@ public class GeneralDatabase{
         frame.getContentPane().setBackground(new Color(196, 164, 132));
         frame.setLayout(null);
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
         scrollPane.setBounds(50, 150, 1100, 650);
 
         scrollPane.setVerticalScrollBarPolicy(
@@ -196,16 +203,26 @@ public class GeneralDatabase{
         columnModel.setColumnSelectionAllowed(false);
 
         table.setRowHeight(35);
+        table.setShowGrid(true);
+        table.setGridColor(Color.black);
 
         table.setCellSelectionEnabled(true);
         table.setColumnSelectionAllowed(false);
         table.setRowSelectionAllowed(false);
+
+
 
         table.getTableHeader().setPreferredSize(
             new Dimension(table.getWidth(), 40)
         );
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 15));
 
+        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+        renderer.setHorizontalAlignment(JLabel.CENTER);
+
+        for (int i = 0; i < columnModel.getColumnCount(); i++) {
+            columnModel.getColumn(i).setHeaderRenderer(renderer);
+        }
 
         //Without the following code snippet, when program starts, java automatically activates userIDField which makes the login page unprofessional
         //So this code snippet makes the page more viewable
@@ -225,8 +242,6 @@ public class GeneralDatabase{
     }
 
     class TextAreaRenderer extends JTextArea implements TableCellRenderer {
-        private JLabel label = new JLabel();
-
         public TextAreaRenderer() {
             setLineWrap(true);
             setWrapStyleWord(true);
@@ -238,46 +253,49 @@ public class GeneralDatabase{
                                                        boolean isSelected, boolean hasFocus,
                                                        int row, int column) {
             if (isSelected) {
-                label.setForeground(table.getSelectionForeground());
-                label.setBackground(table.getSelectionBackground());
+                this.setForeground(table.getSelectionForeground());
+                this.setBackground(table.getSelectionBackground());
             } else {
-                label.setForeground(table.getForeground());
-                label.setBackground(table.getBackground());
+                this.setForeground(table.getForeground());
+                this.setBackground(table.getBackground());
             }
-            label.setText((value == null) ? "" : value.toString());
+            this.setText((value == null) ? "" : value.toString());
             adjustRowHeight(table, row, column);
 
             
-            if (column == 0){
-                label.setFont(new Font("Arial", 0, 15));
-                label.setHorizontalAlignment(JLabel.LEFT);
+            if (column == table.getColumnModel().getColumnIndex("Action")){
+                this.setFont(new Font("Arial", Font.BOLD, 15));
+                this.setForeground(new Color(2, 48, 32));
+                
             }
-            if (column == 1){
-                label.setFont(new Font("Arial", 0, 15));
-                label.setHorizontalAlignment(JLabel.LEFT);
+            else {
+                this.setFont(new Font("Arial", 0, 15));
+                this.setForeground(Color.black);
             }
-            else if (column == 2){
-                label.setFont(new Font("Arial", 0, 15));
-                label.setHorizontalAlignment(JLabel.LEFT);
+                
+
+            if (column == table.getColumnModel().getColumnIndex("Reviews")){
+                this.setForeground(Color.blue);
+                this.setBorder(new EmptyBorder(0, 0, 0, 0));
             }
-            else if (column == 3){
-                label.setForeground(Color.BLUE);
-                label.setFont(new Font("Arial", 0, 15));
-                label.setHorizontalAlignment(JLabel.LEFT);
+            else if (column == 9){
+                this.setBorder(new EmptyBorder(0, 0, 0, 0));
             }
-            else if (column == 4 ){
-                label.setFont(new Font("Arial", Font.BOLD, 15));
-                label.setHorizontalAlignment(JLabel.CENTER);
+            else{
+                int padding = (this.getWidth() - this.getFontMetrics(this.getFont()).stringWidth(this.getText())) / 2;
+                this.setBorder(new EmptyBorder(0, padding, 0, padding/3));
             }
+                
+                
     
-            return label;
+            return this;
         }
     
         private void adjustRowHeight(JTable table, int row, int column) {   //If the text is longer than the width of the cell, the
             setBounds(table.getCellRect(row, column, false));//text occupies the next line as well
             int preferredHeight = getPreferredSize().height;
             if (table.getRowHeight(row) < preferredHeight) {
-                table.setRowHeight(row, preferredHeight);
+                table.setRowHeight(row, preferredHeight/2);
             }
         }
     }

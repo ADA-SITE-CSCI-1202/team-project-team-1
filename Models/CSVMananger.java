@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CSVMananger {
+public class CSVMananger {
     private static final String CSV_FILE = "Data/general.csv";
     private static final String Brodsky_FILE = "Data/brodsky.csv";
 

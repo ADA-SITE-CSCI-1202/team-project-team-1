@@ -96,7 +96,7 @@ public class AdminView {
         generalDB.addActionListener(e -> {
             try {
                 frame.dispose();
-                new();
+                new GeneralDatabase();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
