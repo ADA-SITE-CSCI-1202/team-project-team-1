@@ -66,11 +66,11 @@ public class BookProfileForm extends JFrame {
         saveButton.addActionListener((e) -> {
             try {
                 String timeSpent = timefield.getText();
-                String rating = ratingField.getText();
+                String ratingText = ratingField.getText();
                 String review = reviewTextArea.getText();
 
                 timeSpent = (timeSpent.length() > 0) ? timeSpent : "Add Time Spent";
-                rating = (rating.length() > 0) ? rating : "Add Rating";
+                int rating = (ratingText.length() > 0) ? Integer.parseInt(ratingText) : -1;
                 review = (review.length() > 0) ? review : "Add Review";
 
                 String startDay = String.valueOf(startDayCombo.getSelectedItem());
@@ -103,18 +103,40 @@ public class BookProfileForm extends JFrame {
                     endDate = LocalDate.of(Integer.parseInt(endedYear), endedMonth.getValue(), Integer.parseInt(endDay));
                     formattedEndDate = endDate.format(formatter);        
                 }
+
+                // if (GeneralCSV.contains()) {
+                //     throw new IllegalAccessError();
+                // }
                     
                 if (startDate.compareTo(endDate) > 0)
                     throw new TimeLimitExceededException();
-                String[] ratingTypes = {"1", "2", "3", "4", "5"};
-                if (rating != "Add Rating" && !Arrays.asList(ratingTypes).contains(rating))
+
+                Integer[] ratingTypes = {-1, 1, 2, 3, 4, 5};
+                if (!Arrays.asList(ratingTypes).contains(rating))
                     throw new IllegalArgumentException();
+
                 System.out.println(timeSpent + " " + formattedStartDate + " " + formattedEndDate + " " + rating + " " +  review);
+
+                timefield.setText("");
+                ratingField.setText("");
+                reviewTextArea.setText("");
+                startYear.setText("");
+                endYear.setText("");
+
+                startDayCombo.setSelectedItem(0);
+                endDayCombo.setSelectedItem(0);
+                startMonthCombo.setSelectedItem(0);
+                endMonthCombo.setSelectedItem(0);
+                
+                
 
             } catch (TimeLimitExceededException ex) {
                 JOptionPane.showMessageDialog(null, "The End Date Cannot Be After the Start Date!", "Warning", JOptionPane.ERROR_MESSAGE);
-            } catch (IllegalArgumentException ex){
+            } catch (IllegalArgumentException ex2){
                 JOptionPane.showMessageDialog(null, "The Rating should be an integer from 1 to 5!", "Warning", JOptionPane.ERROR_MESSAGE);
+            } catch (IllegalAccessError iae){
+                JOptionPane.showMessageDialog(null, "The Book Already Exists in General Database", "Warning", JOptionPane.ERROR_MESSAGE);
+
             }
             
 

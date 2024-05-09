@@ -31,7 +31,7 @@ public class Review {
         return content;
     }
 
-    public double getRating() {
+    public int getRating() {
         return rating;
     }
 

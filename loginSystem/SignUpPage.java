@@ -5,7 +5,12 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 import javax.swing.JButton;
@@ -161,6 +166,16 @@ public class SignUpPage extends LoginPage{
             public void mouseClicked(MouseEvent e)  {  
                 frame.dispose();
                 loginFrame.setVisible(true);
+                Path userFolder = Paths.get("Data/User");
+                if (!Files.exists(userFolder)){
+                    try {
+                        Files.createDirectory(userFolder);
+                    } catch (IOException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                }
+                File user = new File("Data/User" + userIDField.getText());
                 
 
             }  

@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -20,6 +21,7 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -144,10 +146,12 @@ public class GeneralDatabase{
                     }
                 }
 
-                else if (row != -1 && column == table.getColumnModel().getColumnIndex("Action")){ //When add is pushed, user should be able to add the book to the personal db
+                else if (row != -1 && column == table.getColumnModel().getColumnIndex("Action") && column == 4){ //When add is pushed, user should be able to add the book to the personal db
                     LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
                                                         .mapToObj(col -> table.getValueAt(row, col))
                                                         .toArray()));
+                    JOptionPane.showMessageDialog(null, "The Book Successfully Added to the Personal DataBase! ", "Success", JOptionPane.INFORMATION_MESSAGE);
+
                                             
                     System.out.println(list); //Murad should add this to personal database, instead of printing
                     
@@ -230,6 +234,12 @@ public class GeneralDatabase{
         );
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 15));
 
+        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+        renderer.setHorizontalAlignment(JLabel.CENTER);
+
+        for (int i = 0; i < columnModel.getColumnCount(); i++) {
+            columnModel.getColumn(i).setHeaderRenderer(renderer);
+        }
 
         //Without the following code snippet, when program starts, java automatically activates userIDField which makes the login page unprofessional
         //So this code snippet makes the page more viewable

@@ -25,7 +25,7 @@ public class ReviewPage {
 
     public ReviewPage (Book book, Review review, Boolean isEditable, JTable table, int column, int row, User user){
         String content = (review != null) ? review.getContent() : "";
-        String userNameString = user.getUsername();
+        String userNameString = user.getUsername(); 
         frame = new JFrame();
         frame.setSize(800, 670);
         frame.setLayout(null);
@@ -54,14 +54,16 @@ public class ReviewPage {
         frame.add(starLabel);
 
         if (!isEditable){
-        JLabel ratingLabel = new JLabel(String.valueOf(5)); //Takes the rating from review object and puts it 
+        JLabel ratingLabel = new JLabel(String.valueOf(5)); //Takes the rating from review object and puts it // eslinde olmali: i: review.getRating()
         ratingLabel.setBounds(340, 135, 50, 30);
         ratingLabel.setFont(new Font("Arial", 0, 20));
         frame.add(ratingLabel);
         }
         else{
             JComboBox<Integer> starBox = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
-            starBox.setSelectedItem(table.getValueAt(row, 2));
+            String ratingValue = (String)table.getValueAt(row, table.getColumnModel().getColumnIndex("User Rating"));
+            if ("12345".contains(ratingValue))
+                starBox.setSelectedIndex(Integer.parseInt(ratingValue) - 1);;            
             starBox.setBounds(340, 137, 65, 30);
             starBox.setFont(new Font("Arial", 0, 17));
             
@@ -69,7 +71,7 @@ public class ReviewPage {
                 public void itemStateChanged(ItemEvent e) {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                         Integer selectedItem = (Integer) e.getItem();
-                        table.setValueAt(selectedItem, row, 2);
+                        table.setValueAt(selectedItem, row, table.getColumnModel().getColumnIndex("User Rating"));
                     }
                 }
             });
