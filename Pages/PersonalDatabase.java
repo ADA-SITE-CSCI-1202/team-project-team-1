@@ -5,23 +5,26 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import javax.swing.JOptionPane;
 
 import Models.Book;
+import Models.GeneralBook;
+import Models.PersonalBook;
+import Models.PersonalManager;
 import Models.Review;
 import Models.User;
 import Pages.reviewSystem.ReviewPage;
 
 public class PersonalDatabase extends GeneralDatabase  {
-    User user;
     
-    public PersonalDatabase(User user)  {
-        this.user = user;
+    public PersonalDatabase(String username) {
+        super(username);
         frame.setSize(1300, 950);
         scrollPane.setBounds(50, 150, 1200, 750);
-        
+
         String[] newcolumns = new String[]{"Status", "Time Spent",
             "Start Date", "End Date", "User Rating", "User Review"};
 
@@ -30,26 +33,15 @@ public class PersonalDatabase extends GeneralDatabase  {
             model.addColumn(str);
         }
         table.setDefaultRenderer(Object.class, new TextAreaRenderer());
-        
-        
-        ArrayList<Review> reviewList= new ArrayList<>(Arrays.asList( //this is actually for writing personal db
-            new Review("Murad", "Cox gozedwnjhwbx njhbcxwhbhjxbwjk,jbxwhbjwebjcbwxjbcewb el he ewnd", 5),
-            new Review("Farhad", "Yaxsi kimi", 2),
-            new Review("Ibrahim", "Orta", 5)
-        ));
-         //Murad can pass like that(note that this is just as a framework to what it should look like)
-        Review rew = reviewList.get(0);
-        Review rew2 = reviewList.get(1);
-        int shownContentLength = (rew.getContent().length() >= 10) ? 10 : rew.getContent().length();
-        int shownContentLength2 = (rew2.getContent().length() >= 10) ? 10 : rew2.getContent().length();
-        String shownContent = rew.getContent().substring(0, shownContentLength) + "..." + "\nClick To Read More";
-        String shownContent2 = rew2.getContent().substring(0, shownContentLength2) + "..." + "\nClick To Read More";
-        String ratingContent = (rew.getRating() != -1) ? String.valueOf(rew.getRating()) : "Add Rating";
-        String ratingContent2 = (rew2.getRating() != -1) ? String.valueOf(rew2.getRating()) : "Add Rating";
-        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList), "5", "5", "10", "5", ratingContent, shownContent});
-        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList), "5", "5", "10", "5", ratingContent2, shownContent2 });
 
+        PersonalManager pm = new PersonalManager();
+        List<PersonalBook> books = pm.readFromCsv(username);
+        
+        for (PersonalBook personalBook : books) {
+            model.addRow(new Object[]{personalBook.getTitle(), personalBook.getAuthor(), personalBook.getRating(), personalBook.getReviews(), personalBook.getStatus(), personalBook.getTimeSpent(), personalBook.getStartDate(), personalBook.getEndDate(), personalBook.getUserRating(), personalBook.getUserReview()});
+        }
 
+        
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
@@ -63,11 +55,20 @@ public class PersonalDatabase extends GeneralDatabase  {
                     String value = (String) table.getModel().getValueAt(row, column);
                     String title = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex("Title"));
                     String author = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex("Author"));
+
+                    List<Review> reviewList = new ArrayList<>();
+
+                    for (PersonalBook personalBook : books) {
+                        if(personalBook.getTitle().equals(title)) {
+                            reviewList = personalBook.getReviews();
+                        }
+                    }
+
                     if (value.contains("To Read More") || "12345".contains(value)) {
-                        ReviewPage rp = new ReviewPage(new Book(title, author), reviewList.get(0), true, table, column, row, user);
+                        ReviewPage rp = new ReviewPage(new Book(title, author), reviewList.get(0), true, table, column, row);
                     }
                     else{
-                        new ReviewPage(new Book(title, author), null, true, table, column, row, user);
+                        new ReviewPage(new Book(title, author), null, true, table, column, row);
                     }
                 }
 
@@ -97,14 +98,9 @@ public class PersonalDatabase extends GeneralDatabase  {
 
             
         });
-
-   
-
-
     }
 
-
     public static void main(String[] args) {
-        new PersonalDatabase(new User("Farhad", "ewdshj"));
+        new PersonalDatabase("Murad");
     }
 }

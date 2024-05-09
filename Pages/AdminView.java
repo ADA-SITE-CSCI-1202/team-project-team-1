@@ -7,24 +7,17 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import org.w3c.dom.events.MouseEvent;
-
-import Models.User;
 import Pages.loginSystem.LoginMain;
-import Pages.loginSystem.SignUpPage;
 
 public class AdminView {
     JFrame frame = new JFrame();
@@ -45,6 +38,10 @@ public class AdminView {
     
     JButton generalDB = new JButton("General DB Management");
     JButton logOut = new JButton("Log Out");
+
+    JButton addButton = new JButton("Add");
+    JButton removeButton = new JButton("Remove");
+    JButton editButton = new JButton("Edit");
 
     Border compoundBorder = BorderFactory.createCompoundBorder(
                                         BorderFactory.createLineBorder(new Color(0xdb6d13), 4, true),
@@ -96,7 +93,7 @@ public class AdminView {
         generalDB.addActionListener(e -> {
             try {
                 frame.dispose();
-                new GeneralDatabase();
+                new GeneralDatabase("admin");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

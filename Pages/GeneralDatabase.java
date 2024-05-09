@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,6 +19,7 @@ import java.text.AttributedString;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -29,12 +29,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
-import Models.Book;
+import Models.CSVMananger;
 import Models.GeneralBook;
 import Models.Review;
-import Models.User;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -60,6 +58,7 @@ public class GeneralDatabase{
     String data[][];
     JButton addButton;
     ActionListener listener;
+    String username;
 
     public <M> String arrayListToString(ArrayList<M> list) { //Reads arraylist, as in case review list, then converts it to string in a formatted way
         return list.stream()
@@ -67,11 +66,10 @@ public class GeneralDatabase{
                    .collect(Collectors.joining(", "));  // Customize delimiter here
     }
 
-    public GeneralDatabase() {
+    public GeneralDatabase(String username) {
+        this.username = username;
  
-        column = new String[]{"Title","Author","Rating", "Reviews"}; 
-        data = new String[][]{ {"101","Amit","670000", arrayListToString(new ArrayList<>(Arrays.asList("we", "s"))), "Add"},    
-        }; //Murad will read and write from csv to here
+        column = new String[]{"Title","Author","Rating", "Reviews"};
 
         model = new DefaultTableModel(data, column); 
         table = new JTable(model){
@@ -83,18 +81,12 @@ public class GeneralDatabase{
         };
         table.removeEditor(); //User cannot edit text on table
 
+        CSVMananger manager = new CSVMananger();
+        List<GeneralBook> books = manager.readFromCsv();
 
-        ArrayList<Review> reviewList= new ArrayList<>(Arrays.asList( //this is actually for writing personal db
-            new Review("Farhad", "Cox gozel", 5),
-            new Review("Murad", "Yaxsi kimi", 5),
-            new Review("Ibrahim", "Orta", 4),
-            new Review("Ibrahim", "Orta", 5)
-        )); //Murad can pass like that(note that this is just as a framework to what it should look like)
-       
-
-        //The following line is to add a new row and can be used in adminview or personal db
-        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList)});
-        model.addRow(new Object[]{"The Little Prince", "IDK", 5, arrayListToString(reviewList)});
+        for (GeneralBook generalBook : books) {
+            model.addRow(new Object[]{generalBook.getTitle(), generalBook.getAuthor(), generalBook.getRating(), generalBook.getReviews()});
+        }
 
         table.addMouseListener(new MouseAdapter() { 
             public void mouseClicked(MouseEvent e) {
@@ -155,12 +147,22 @@ public class GeneralDatabase{
             int row = table.getSelectedRow();
             table.clearSelection();
             try {
+                List<Review> reviewsList = new ArrayList<>();
+                float rating = 0;
+
                 LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
                 .mapToObj(col -> table.getValueAt(row, col))
                 .toArray()));
-                GeneralBook book = new GeneralBook((String)list.get(0), (String)list.get(1));
-                new BookProfileForm(book);
-                System.out.println(list); //Murad should add this to personal database, instead of printing
+
+                for (GeneralBook generalBook : books) {
+                    if(generalBook.getTitle().equals((String)list.get(0))) {
+                        reviewsList = generalBook.getReviews();
+                        rating = generalBook.getRating();
+                    }
+                }
+
+                GeneralBook book = new GeneralBook((String)list.get(0), (String)list.get(1), rating, reviewsList);
+                new BookProfileForm(book, username);
             } catch (IndexOutOfBoundsException ex) {
                 JOptionPane.showMessageDialog(null, "You Should Select a Book! ", "Warning", JOptionPane.ERROR_MESSAGE);
             }            
@@ -334,7 +336,7 @@ public class GeneralDatabase{
 
 
     public static void main(String[] args) {
-        new GeneralDatabase();
+        new GeneralDatabase("Murad");
     }
 }
 

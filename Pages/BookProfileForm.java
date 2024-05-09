@@ -12,13 +12,19 @@ import Models.PersonalBook;
 import Models.PersonalManager;
 
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class BookProfileForm extends JFrame {
 
-    public BookProfileForm(GeneralBook book) {
+    public BookProfileForm(GeneralBook book, String username) {
         setTitle("Profile Book Form");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -81,11 +87,11 @@ public class BookProfileForm extends JFrame {
 
         saveButton.addActionListener((e) -> {
             try {
-                String timeSpent = timefield.getText();
+                String timeSpentText = timefield.getText();
                 String ratingText = String.valueOf(ratingComboBox.getSelectedItem());
                 String review = reviewTextArea.getText();
 
-                timeSpent = (timeSpent.length() > 0) ? timeSpent : "Add Time Spent";
+                int timeSpent = (timeSpentText.length() > 0) ? Integer.parseInt(timeSpentText) : 0;
                 int rating = (ratingText != "No Rating") ? Integer.parseInt(ratingText) : -1;
                 review = (review.length() > 0) ? review : "Add Review";
 
@@ -97,27 +103,20 @@ public class BookProfileForm extends JFrame {
                 String endMonth = String.valueOf(endMonthCombo.getSelectedItem());
                 String endedYear = String.valueOf(endYear.getText());
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                Date startDate = null;
+                Date endDate = null;
 
-                String formattedStartDate = "Add Start Date";
-                String formattedEndDate = "Add End Date";
+                SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM");
+                // Format for formatting date
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-                LocalDate startDate = LocalDate.MIN;
-                LocalDate endDate = LocalDate.MAX;
-
-                if (startDay.length() > 0 &&  startMonth.length() > 0 && startedYear.length() > 0 ){
-                    Month startedMonth = Month.valueOf(startMonth.toUpperCase());
-                    
-
-                    startDate = LocalDate.of(Integer.parseInt(startedYear), startedMonth.getValue(), Integer.parseInt(startDay));
-                    formattedStartDate = startDate.format(formatter);
-                }
-
-                if (endDay.length() > 0 && endMonth.length() >0 && endedYear.length() > 0){
-                    Month endedMonth = Month.valueOf(endMonth.toUpperCase());
-
-                    endDate = LocalDate.of(Integer.parseInt(endedYear), endedMonth.getValue(), Integer.parseInt(endDay));
-                    formattedEndDate = endDate.format(formatter);        
+                try {
+                    // Parse start date
+                    startDate = dateFormat.parse(startDay + "/" + (monthFormat.parse(startMonth).getMonth() + 1) + "/" + startedYear);
+                    // Parse end date
+                    endDate = dateFormat.parse(endDay + "/" + (monthFormat.parse(endMonth).getMonth() + 1) + "/" + endedYear);
+                } catch (ParseException ne) {
+                    ne.printStackTrace();
                 }
 
                 // if (GeneralCSV.contains()) {
@@ -127,9 +126,8 @@ public class BookProfileForm extends JFrame {
                 if (startDate.compareTo(endDate) > 0)
                     throw new TimeLimitExceededException();
 
-                System.out.println(timeSpent + " " + formattedStartDate + " " + formattedEndDate + " " + rating + " " +  review);
                 PersonalManager pm = new PersonalManager();
-                pm.addPersonalBookToCsv(new PersonalBook(book.getTitle(), book.getAuthor(), ))
+                pm.addPersonalBookToCsv(new PersonalBook(book.getTitle(), book.getAuthor(), book.getReviews(), "", timeSpent, startDate, endDate, rating, review), username);
 
                 timefield.setText("");
                 reviewTextArea.setText("");
@@ -164,6 +162,11 @@ public class BookProfileForm extends JFrame {
 
         this.setVisible(true);
         
+    }
+
+    private static Date parseDate(String dateString) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.parse(dateString);
     }
 
     private void addLabelAndFixedLabel(String labelText, String fixedText, int yPos) {
