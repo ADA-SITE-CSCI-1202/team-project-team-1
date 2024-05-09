@@ -27,7 +27,7 @@ import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import Pages.AdminView;
+// import Pages.AdminView;
 
 public class LoginPage {
     JFrame frame = new JFrame();
@@ -148,7 +148,7 @@ public class LoginPage {
 
                 if (ID.equals("admin") && Password.equals("admin")) {
                     frame.dispose();
-                    new AdminView();
+                    // new AdminView();
                 }
     
                 if (loginInfo.containsKey(ID)) {
@@ -202,5 +202,6 @@ public class LoginPage {
         
         frame.setVisible(true);
     }
+    
     
 }

@@ -26,14 +26,16 @@ import java.awt.event.MouseEvent;
     class BlankInputException extends IllegalArgumentException {
         public BlankInputException() {
             super("Empty Blanks");
-            JOptionPane.showMessageDialog(null, "Please, fill out all the blanks! ", "Warning", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please, fill out all the blanks! ", 
+            "Warning", JOptionPane.ERROR_MESSAGE);
         }
     }
     
     class InvalidUsernameLengthException extends IllegalArgumentException {
         public InvalidUsernameLengthException() {
             super("Username out of Criteria");
-            JOptionPane.showMessageDialog(null, "Username should be between 5 and 15 characters! ", "Warning", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Username should be between 5 and 15 characters! ", 
+            "Warning", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -138,7 +140,7 @@ public class SignUpPage extends LoginPage{
                 AgainPasswordField.setText("");
     
                     loginInfo.put(ID, Password);
-                    try (BufferedWriter bw = new BufferedWriter(new FileWriter("loginSystem/Book1.csv", true))) {
+                    try (BufferedWriter bw = new BufferedWriter(new FileWriter("loginSystem/Users.csv", true))) {
                         bw.newLine();
                         bw.append(ID + "," + Password);
                         JOptionPane.showMessageDialog(null, "Signed Up, successfully", "Successful", JOptionPane.INFORMATION_MESSAGE);
