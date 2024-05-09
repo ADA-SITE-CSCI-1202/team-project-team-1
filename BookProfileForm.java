@@ -9,7 +9,6 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 
 public class BookProfileForm extends JFrame {
 
@@ -43,9 +42,21 @@ public class BookProfileForm extends JFrame {
         addLabelAndFullDateCombo("End Date:", endDayCombo, endMonthCombo, endYear, 4);
 
         // Rating and Extended Review
-        JTextField ratingField = new JTextField();;
-        addLabelAndTextField("Rating (Out of 5):", ratingField, 5);
+        GridBagConstraints constraintz = new GridBagConstraints();
+        constraintz.fill = GridBagConstraints.HORIZONTAL;
+        constraintz.insets = new Insets(10, 50, 10, 50);
+        
 
+        JLabel label = new JLabel("Rating (out of 5):");
+        constraintz.gridx = 0;
+        constraintz.gridy = 5;
+        add(label, constraintz);
+
+        JComboBox<String> ratingComboBox = new JComboBox<>(new String[]{"No Rating", "1", "2", "3", "4", "5"});
+        constraintz.gridx = 1;
+        add(ratingComboBox, constraintz);
+        
+//
         JTextArea reviewTextArea = new JTextArea(4, 20);
         addLabelAndTextArea("Review (Character Limit: 300):", reviewTextArea, 6, 300);
 
@@ -66,11 +77,11 @@ public class BookProfileForm extends JFrame {
         saveButton.addActionListener((e) -> {
             try {
                 String timeSpent = timefield.getText();
-                String ratingText = ratingField.getText();
+                String ratingText = String.valueOf(ratingComboBox.getSelectedItem());
                 String review = reviewTextArea.getText();
 
                 timeSpent = (timeSpent.length() > 0) ? timeSpent : "Add Time Spent";
-                int rating = (ratingText.length() > 0) ? Integer.parseInt(ratingText) : -1;
+                int rating = (ratingText != "No Rating") ? Integer.parseInt(ratingText) : -1;
                 review = (review.length() > 0) ? review : "Add Review";
 
                 String startDay = String.valueOf(startDayCombo.getSelectedItem());
@@ -111,18 +122,14 @@ public class BookProfileForm extends JFrame {
                 if (startDate.compareTo(endDate) > 0)
                     throw new TimeLimitExceededException();
 
-                Integer[] ratingTypes = {-1, 1, 2, 3, 4, 5};
-                if (!Arrays.asList(ratingTypes).contains(rating))
-                    throw new IllegalArgumentException();
-
                 System.out.println(timeSpent + " " + formattedStartDate + " " + formattedEndDate + " " + rating + " " +  review);
 
                 timefield.setText("");
-                ratingField.setText("");
                 reviewTextArea.setText("");
                 startYear.setText("");
                 endYear.setText("");
 
+                ratingComboBox.setSelectedItem(0);
                 startDayCombo.setSelectedItem(0);
                 endDayCombo.setSelectedItem(0);
                 startMonthCombo.setSelectedItem(0);
@@ -132,8 +139,6 @@ public class BookProfileForm extends JFrame {
 
             } catch (TimeLimitExceededException ex) {
                 JOptionPane.showMessageDialog(null, "The End Date Cannot Be After the Start Date!", "Warning", JOptionPane.ERROR_MESSAGE);
-            } catch (IllegalArgumentException ex2){
-                JOptionPane.showMessageDialog(null, "The Rating should be an integer from 1 to 5!", "Warning", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalAccessError iae){
                 JOptionPane.showMessageDialog(null, "The Book Already Exists in General Database", "Warning", JOptionPane.ERROR_MESSAGE);
 
