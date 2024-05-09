@@ -5,7 +5,7 @@ public class Review {
     private String content;
     private int rating;
 
-    protected Review(User user, String content, int rating) {
+    public Review(User user, String content, int rating) {
         this.user = user;
         this.content = content;
         this.rating = rating;
@@ -33,5 +33,9 @@ public class Review {
 
     public double getRating() {
         return rating;
+    }
+
+    public String toString(){
+        return user.getUsername();
     }
 }
