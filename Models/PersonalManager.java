@@ -94,7 +94,7 @@ public class PersonalManager {
     }
 
     private static Date parseDate(String dateString) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         return sdf.parse(dateString);
     }
 
@@ -105,6 +105,21 @@ public class PersonalManager {
             String line = String.format("%s,%s,%s,%s,%d,%s,%s,%d,%s",
                     book.getTitle(), book.getAuthor(), formatReviews(book.getReviews()), "Not Started", 0,
                     "", "", 0, "No Review");
+            
+            writer.write(line);
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addPersonalBookToCsv(PersonalBook book, String username) {
+        String csvFileName = CSV_FOLDER + username + ".csv";
+    
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFileName, true))) {
+            String line = String.format("%s,%s,%s,%s,%d,%s,%s,%d,%s",
+                    book.getTitle(), book.getAuthor(), formatReviews(book.getReviews()), "Not Started", book.getTimeSpent(),
+                    book.getStartDate(), book.getEndDate(), book.getUserRating(), !book.getUserReview().isEmpty() ? book.getUserReview() : "No Review");
             
             writer.write(line);
             writer.newLine();

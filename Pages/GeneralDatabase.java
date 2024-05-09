@@ -16,7 +16,6 @@ import java.awt.event.WindowListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
-import java.awt.print.Book;
 import java.text.AttributedString;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +28,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
+
+import Models.Book;
+import Models.GeneralBook;
 import Models.Review;
 import Models.User;
 
@@ -156,7 +158,7 @@ public class GeneralDatabase{
                 LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
                 .mapToObj(col -> table.getValueAt(row, col))
                 .toArray()));
-                Models.Book book = new Models.Book((String)list.get(0), (String)list.get(1));
+                GeneralBook book = new GeneralBook((String)list.get(0), (String)list.get(1));
                 new BookProfileForm(book);
                 System.out.println(list); //Murad should add this to personal database, instead of printing
             } catch (IndexOutOfBoundsException ex) {

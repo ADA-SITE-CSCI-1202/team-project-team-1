@@ -1,3 +1,4 @@
+package Pages;
 import javax.naming.TimeLimitExceededException;
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
@@ -6,6 +7,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 import Models.Book;
+import Models.GeneralBook;
+import Models.PersonalBook;
+import Models.PersonalManager;
 
 import java.awt.*;
 import java.time.LocalDate;
@@ -14,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 
 public class BookProfileForm extends JFrame {
 
-    public BookProfileForm(Book book) {
+    public BookProfileForm(GeneralBook book) {
         setTitle("Profile Book Form");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -58,7 +62,6 @@ public class BookProfileForm extends JFrame {
         constraintz.gridx = 1;
         add(ratingComboBox, constraintz);
         
-//
         JTextArea reviewTextArea = new JTextArea(4, 20);
         addLabelAndTextArea("Review (Character Limit: 300):", reviewTextArea, 6, 300);
 
@@ -125,6 +128,8 @@ public class BookProfileForm extends JFrame {
                     throw new TimeLimitExceededException();
 
                 System.out.println(timeSpent + " " + formattedStartDate + " " + formattedEndDate + " " + rating + " " +  review);
+                PersonalManager pm = new PersonalManager();
+                pm.addPersonalBookToCsv(new PersonalBook(book.getTitle(), book.getAuthor(), ))
 
                 timefield.setText("");
                 reviewTextArea.setText("");
