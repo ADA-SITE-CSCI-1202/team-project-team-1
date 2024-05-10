@@ -6,12 +6,12 @@ import java.util.List;
 public class PersonalBook extends GeneralBook{
     private String Status;
     private int TimeSpent;
-    private Date StartDate;
-    private Date EndDate;
+    private String StartDate;
+    private String EndDate;
     private int UserRating;
     private String UserReview;
     
-    public PersonalBook(String title, String author, List<Review> reviews, String status, int timeSpent, Date startDate, Date endDate, int userRating, String userReview) {
+    public PersonalBook(String title, String author, List<Review> reviews, String status, int timeSpent, String startDate, String endDate, int userRating, String userReview) {
         super(title, author, reviews);
         
         Status = status;
@@ -30,11 +30,11 @@ public class PersonalBook extends GeneralBook{
         TimeSpent = timeSpent;
     }
     
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         StartDate = startDate;
     }
     
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         EndDate = endDate;
     }
     
@@ -54,11 +54,11 @@ public class PersonalBook extends GeneralBook{
         return TimeSpent;
     }
     
-    public Date getStartDate() {
+    public String getStartDate() {
         return StartDate;
     }
     
-    public Date getEndDate() {
+    public String getEndDate() {
         return EndDate;
     }
     

@@ -103,20 +103,27 @@ public class BookProfileForm extends JFrame {
                 String endMonth = String.valueOf(endMonthCombo.getSelectedItem());
                 String endedYear = String.valueOf(endYear.getText());
 
-                Date startDate = null;
-                Date endDate = null;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-                SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM");
-                // Format for formatting date
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String formattedStartDate = "Add Start Date";
+                String formattedEndDate = "Add End Date";
 
-                try {
-                    // Parse start date
-                    startDate = dateFormat.parse(startDay + "/" + (monthFormat.parse(startMonth).getMonth() + 1) + "/" + startedYear);
-                    // Parse end date
-                    endDate = dateFormat.parse(endDay + "/" + (monthFormat.parse(endMonth).getMonth() + 1) + "/" + endedYear);
-                } catch (ParseException ne) {
-                    ne.printStackTrace();
+                LocalDate startDate = LocalDate.MIN;
+                LocalDate endDate = LocalDate.MAX;
+
+                if (startDay.length() > 0 &&  startMonth.length() > 0 && startedYear.length() > 0 ){
+                    Month startedMonth = Month.valueOf(startMonth.toUpperCase());
+                    
+
+                    startDate = LocalDate.of(Integer.parseInt(startedYear), startedMonth.getValue(), Integer.parseInt(startDay));
+                    formattedStartDate = startDate.format(formatter);
+                }
+
+                if (endDay.length() > 0 && endMonth.length() >0 && endedYear.length() > 0){
+                    Month endedMonth = Month.valueOf(endMonth.toUpperCase());
+
+                    endDate = LocalDate.of(Integer.parseInt(endedYear), endedMonth.getValue(), Integer.parseInt(endDay));
+                    formattedEndDate = endDate.format(formatter);        
                 }
 
                 // if (GeneralCSV.contains()) {
@@ -127,7 +134,7 @@ public class BookProfileForm extends JFrame {
                     throw new TimeLimitExceededException();
 
                 PersonalManager pm = new PersonalManager();
-                pm.addPersonalBookToCsv(new PersonalBook(book.getTitle(), book.getAuthor(), book.getReviews(), "", timeSpent, startDate, endDate, rating, review), username);
+                pm.addPersonalBookToCsv(new PersonalBook(book.getTitle(), book.getAuthor(), book.getReviews(), "", timeSpent, formattedStartDate, formattedEndDate, rating, review), username);
 
                 timefield.setText("");
                 reviewTextArea.setText("");
@@ -148,9 +155,6 @@ public class BookProfileForm extends JFrame {
                 JOptionPane.showMessageDialog(null, "The Book Already Exists in General Database", "Warning", JOptionPane.ERROR_MESSAGE);
 
             }
-            
-
-
 
         });
 
@@ -163,12 +167,8 @@ public class BookProfileForm extends JFrame {
         this.setVisible(true);
         
     }
-
-    private static Date parseDate(String dateString) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        return sdf.parse(dateString);
-    }
-
+     
+     
     private void addLabelAndFixedLabel(String labelText, String fixedText, int yPos) {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
