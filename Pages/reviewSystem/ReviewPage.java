@@ -33,7 +33,7 @@ public class ReviewPage {
         frame.setLayout(null);
         frame.setResizable(false); 
         
-        ImageIcon userIcon = new ImageIcon("reviewSystem/User_Icon.png"); //Gets and sets user icon 
+        ImageIcon userIcon = new ImageIcon("Pages/assets/User_Icon.png"); //Gets and sets user icon 
         Image iconImg = userIcon.getImage().getScaledInstance(125, 120, 500); 
         JLabel iconLabel = new JLabel(new ImageIcon(iconImg));
         iconLabel.setBounds(20, 50, 130, 120);
@@ -49,7 +49,7 @@ public class ReviewPage {
         labelRating.setFont(new Font("Arial", 0, 20));
         frame.add(labelRating);
 
-        ImageIcon starIcon = new ImageIcon("reviewSystem/Star_Icon.png"); //Gets and sets the star image
+        ImageIcon starIcon = new ImageIcon("Pages/assets/Star_Icon.png"); //Gets and sets the star image
         Image starImg = starIcon.getImage().getScaledInstance(35, 35, 500);
         JLabel starLabel = new JLabel(new ImageIcon(starImg));
         starLabel.setBounds(302, 130, 35, 35);
@@ -81,40 +81,27 @@ public class ReviewPage {
 
         }
 
-        ImageIcon bookIcon = new ImageIcon("reviewSystem/Book.png"); //Gets and sets the image(icon) of the book
+        ImageIcon bookIcon = new ImageIcon("Pages/assets/Book.png"); //Gets and sets the image(icon) of the book
         Image bookImg = bookIcon.getImage().getScaledInstance(450, 700, 500);
         JLabel bookLabel = new JLabel(new ImageIcon(bookImg)); //we will use this label as a container 
         bookLabel.setBounds(400, -150, 450, 700);
         bookLabel.setLayout(null);
 
-        String authorName = "J.K. Rowling"; // = book.getAuthor(); // this is the real code, but as I'm too lazy to create a book, it is commented out
-        StringBuffer authorNameBuffer = new StringBuffer();
-        for (String i: authorName.split(" ")){ //There is a problem: if the length of a word(a series of letters that are not seperated by space) 
-            while (i.length() > 16){                 //is longer than 16, the program just cuts it, and writes the next word from the next line, so
-                authorNameBuffer.append(i.substring(0, 16) + " ");//I split the word if it is longer than indicated word length 
-                i = i.substring(16, i.length());
-            }
-            authorNameBuffer.append(i + " ");
-        }
-        authorName = authorNameBuffer.toString();
-
-        JLabel bookAuthor = new JLabel("<html>" + authorName + "</html>" ); // the functionality of html tags is that: if the line is longer than width, makes it go the next line
+        JLabel bookAuthor = new JLabel("<html>" + book.getAuthor() + "</html>" ); // the functionality of html tags is that: if the line is longer than width, makes it go the next line
         bookAuthor.setFont(new Font("Times New Roman", Font.PLAIN, 20)); 
         bookAuthor.setBounds(125, 330, 190, 100);
         bookAuthor.setVerticalAlignment(JLabel.CENTER);
         bookAuthor.setHorizontalAlignment(JLabel.CENTER);
         bookAuthor.setForeground(Color.white);
 
-        JLabel bookName = new JLabel("<html>" + "Harry Potter" + "</div></html>"); // the functionality of html tags is that: if the line is longer than width, makes it go the next line
+        JLabel bookName = new JLabel("<html>" + book.getTitle() + "</div></html>"); // the functionality of html tags is that: if the line is longer than width, makes it go the next line
         bookName.setFont(new Font("Times New Roman", Font.BOLD, 30));
         bookName.setBounds(120, 220, 200, 120);
         bookName.setVerticalAlignment(JLabel.TOP);
         bookName.setHorizontalAlignment(JLabel.CENTER);
         bookName.setForeground(Color.white);
 
-        String bookRatingString = String.valueOf(4.5); // = String.valueOf(book.getRating());   //this should be the real code but I do not have a book object yet
-
-        JLabel bookRating = new JLabel(bookRatingString, new ImageIcon(starImg), JLabel.LEFT);
+        JLabel bookRating = new JLabel(String.valueOf(review.getRating()), new ImageIcon(starImg), JLabel.LEFT);
         bookRating.setFont(new Font("Arial", Font.BOLD, 30));
         bookRating.setForeground(Color.white);
         bookRating.setBounds(120, 200, 190, 285);
@@ -126,7 +113,7 @@ public class ReviewPage {
         bookLabel.add(bookRating);
 
         Image board = new ImageIcon( //Gets and sets the board image
-            "reviewSystem/Empty_Sheet.png"
+            "Pages/assets/Empty_Sheet.png"
             ).getImage().getScaledInstance(680, 450, 0);
         ImageIcon boardIcon = new ImageIcon(board);
         JLabel boardLabel = new JLabel(boardIcon); //This will act as a container for the review text
@@ -139,7 +126,7 @@ public class ReviewPage {
 
         if (!isEditable){
             JLabel reviewTextLabel = new JLabel("<html>" +    // Gets and sets the review text, 
-                content                          // the functionality of html tags is that: if the line is longer than width, makes it go the next line
+                review.getContent()                          // the functionality of html tags is that: if the line is longer than width, makes it go the next line
                 + "</html>"); //no more than 300 characters
             reviewTextLabel.setBounds(130, 110, 415, 300);
             reviewTextLabel.setFont(new Font("Times New Roman", 0, 25));
@@ -185,16 +172,11 @@ public class ReviewPage {
 
             reviewPane.setBounds(130, 110, 415, 300);
 
-            
-
-            
-
             boardLabel.add(reviewPane);
         }
 
         boardLabel.add(reviewTag);
         
-
         frame.add(bookLabel);
         frame.add(boardLabel);
 

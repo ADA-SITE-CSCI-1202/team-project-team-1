@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 public class CSVMananger {
     private static final String CSV_FILE = "Data/general.csv";
     private static final String Brodsky_FILE = "Data/brodsky.csv";
@@ -116,10 +118,6 @@ public class CSVMananger {
 
     public static void addToCsv(Book book) {
         // Check if the book already exists
-        if (bookExists(book)) {
-            System.out.println("The book already exists in the CSV file.");
-            return;
-        }
 
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE, true))) {
             String line = String.format("%s,%s,[]", book.getTitle(), book.getAuthor());
@@ -131,7 +129,7 @@ public class CSVMananger {
         }
     }
 
-    private static boolean bookExists(Book book) {
+    public static boolean bookExists(Book book) {
         try (BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE))) {
             String line;
             while ((line = reader.readLine()) != null) {

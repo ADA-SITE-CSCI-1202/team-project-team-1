@@ -7,9 +7,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 import Models.Book;
+import Models.CSVMananger;
 import Models.GeneralBook;
 import Models.PersonalBook;
 import Models.PersonalManager;
+import Models.Review;
 
 import java.awt.*;
 import java.text.ParseException;
@@ -131,6 +133,9 @@ public class BookProfileForm extends JFrame {
 
                 PersonalManager pm = new PersonalManager();
                 pm.addPersonalBookToCsv(new PersonalBook(book.getTitle(), book.getAuthor(), book.getReviews(), "", timeSpent, formattedStartDate, formattedEndDate, rating, review), username);
+
+                CSVMananger manager = new CSVMananger();
+                manager.addReviewToCsv(book.getTitle(), new Review(username, review, rating));
 
                 timefield.setText("");
                 reviewTextArea.setText("");

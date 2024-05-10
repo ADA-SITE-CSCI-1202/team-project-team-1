@@ -46,10 +46,20 @@ public class adminCUD extends JFrame {
                 titleField.setText("");
                 authorField.setText("");
                 if (!isEdit){
-                    CSVMananger.addToCsv(new Book(title, author));
-                    JOptionPane.showMessageDialog(null, "New Book Succefully added! ", 
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
-                    model.addRow(new Object[]{title, author, "No Rating", "No Review"});
+                    try {
+                        if (CSVMananger.bookExists(new Book(title, author))) {
+                            JOptionPane.showMessageDialog(null, "The book already exists in the CSV file.", "Warning", JOptionPane.ERROR_MESSAGE);
+                            throw new Exception();
+                        }
+                        
+                        CSVMananger.addToCsv(new Book(title, author));
+                        JOptionPane.showMessageDialog(null, "New Book Succefully added! ", 
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                        model.addRow(new Object[]{title, author, "No Rating", "No Review"});
+                        
+                    } catch (Exception neme) {
+                        neme.printStackTrace();
+                    }
                 }
                 else{
                     CSVMananger.editInCsv(new Book(title, author), oldTitle);

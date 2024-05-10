@@ -103,9 +103,8 @@ public class GeneralDatabase{
             }
         };
         table.removeEditor(); //User cannot edit text on table
-
-        CSVMananger manager = new CSVMananger();
-        List<GeneralBook> books = manager.readFromCsv();
+        
+        List<GeneralBook> books = CSVMananger.readFromCsv();
 
         for (GeneralBook generalBook : books) {
             model.addRow(new Object[]{generalBook.getTitle(), generalBook.getAuthor(), (generalBook.getRating() == 0) ? messages.getString("No_Rating") : generalBook.getRating(), !generalBook.getReviews().isEmpty() ? generalBook.getReviews() : messages.getString("No_Review")});
@@ -120,7 +119,7 @@ public class GeneralDatabase{
 
                 else if (row != -1 && column == 3) {
                     table.clearSelection();
-                    if (table.getValueAt(row, column) != messages.getString("No Review")){
+                    if (table.getValueAt(row, column) != messages.getString("No_Review")){
                         Rectangle cellRect = table.getCellRect(row, column, true);
                         String text = table.getValueAt(row, column).toString();
                         FontMetrics fm = table.getFontMetrics(table.getFont());

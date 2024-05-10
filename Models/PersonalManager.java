@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 public class PersonalManager {
     private static final String CSV_FOLDER = "Data/UserData/";
 
@@ -98,7 +100,7 @@ public class PersonalManager {
         String csvFileName = CSV_FOLDER + username + ".csv";
 
         if (personalBookExists(book.getTitle(), username)) {
-            System.out.println("The book already exists for this user.");
+            JOptionPane.showMessageDialog(null, "The book already exists for this user.", "Warning", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -118,7 +120,7 @@ public class PersonalManager {
         String csvFileName = CSV_FOLDER + username + ".csv";
         
         if (personalBookExists(book.getTitle(), username)) {
-            System.out.println("The book already exists for this user.");
+            JOptionPane.showMessageDialog(null, "The book already exists for this user.", "Warning", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -194,15 +196,9 @@ public class PersonalManager {
 
     private static String formatReviews(List<Review> reviews) {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
         for (Review review : reviews) {
             sb.append("(").append(review.getUser()).append(".").append(review.getContent()).append(".").append(review.getRating()).append(")");
         }
-        sb.append("]");
         return sb.toString();
-    }
-
-    public static void main(String[] args) {
-        removeBookFromCsv("Epic of Gilgamesh", "Murad");
     }
 }
