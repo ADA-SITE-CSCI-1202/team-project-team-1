@@ -37,12 +37,14 @@ public class LanguageDetecter {
                 messages = ResourceBundle.getBundle("languages.messages", locale);
                 IDandPassword iDandPassword = new IDandPassword();
                 new LoginPage(iDandPassword.getLoginInfo(), messages);
+                frame.dispose();
             }
             else{
                 locale = new Locale("az", "Az");
                 messages = ResourceBundle.getBundle("languages.messages", locale);
                 IDandPassword iDandPassword = new IDandPassword();
                 new LoginPage(iDandPassword.getLoginInfo(), messages);
+                frame.dispose();
             }
         });
 

@@ -18,8 +18,11 @@ import java.awt.font.TextLayout;
 import java.text.AttributedString;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -47,6 +50,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -177,6 +182,28 @@ public class GeneralDatabase{
             }
             }
         });
+
+        table.getTableHeader().addMouseListener(new MouseAdapter() {
+            private Map<Integer, Integer> clickCountMap = new HashMap<>();
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int columnIndex = table.columnAtPoint(e.getPoint());
+                columnIndex = table.convertColumnIndexToModel(columnIndex);
+
+                int clicks = clickCountMap.getOrDefault(columnIndex, 0);
+                clicks = (clicks + 1) % 3; // Cycle through 0 (original), 1 (asc), 2 (desc)
+                clickCountMap.put(columnIndex, clicks);
+
+                if (clicks == 0) {
+                    rowSorter.setSortKeys(Collections.emptyList());
+                } else {
+                    SortOrder order = clicks == 1 ? SortOrder.ASCENDING : SortOrder.DESCENDING;
+                    rowSorter.setSortKeys(Collections.singletonList(new RowSorter.SortKey(columnIndex, order)));
+                }
+            }
+        });
+
 
         frame.addMouseListener(new MouseAdapter() {
             @Override
