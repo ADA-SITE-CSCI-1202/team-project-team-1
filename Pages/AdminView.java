@@ -19,6 +19,9 @@ import javax.swing.border.Border;
 
 import Pages.loginSystem.LoginMain;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class AdminView {
     JFrame frame = new JFrame();
     
@@ -32,19 +35,27 @@ public class AdminView {
     ImageIcon logOutIcon = new ImageIcon("Pages/assets/logout.png");
     ImageIcon dbIcon = new ImageIcon("Pages/assets/database-storage.png");
 
-    JLabel projectName = new JLabel("Library Management");
+    JLabel projectName;
     
     JLabel title = new JLabel("Admin");
     
-    JButton generalDB = new JButton("General DB Management");
-    JButton logOut = new JButton("Log Out");
+    JButton generalDB;
+    JButton logOut;
 
     Border compoundBorder = BorderFactory.createCompoundBorder(
                                         BorderFactory.createLineBorder(new Color(0xdb6d13), 4, true),
                                         BorderFactory.createEmptyBorder(5, 10, 5, 10)
                                         );
 
-    public AdminView() {
+    ResourceBundle messages;
+
+    public AdminView(ResourceBundle bundle) {
+        messages = bundle;
+
+        projectName = new JLabel(messages.getString("projectName"));;
+        generalDB = new JButton(messages.getString("generalDB"));
+        logOut = new JButton(messages.getString("logOut"));
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         panel.setBackground(new Color(0xdb6d13));
@@ -62,6 +73,7 @@ public class AdminView {
 
         title.setFont(new Font(null, Font.BOLD, 24));
         title.setForeground(Color.WHITE);
+        title.setText(messages.getString("adminTitle"));
         
         panel.add(projectName, BorderLayout.NORTH);
         panel.add(title, BorderLayout.CENTER);
@@ -89,7 +101,7 @@ public class AdminView {
         generalDB.addActionListener(e -> {
             try {
                 frame.dispose();
-                new GeneralDatabase("admin", true);
+                new GeneralDatabase("admin", true, messages);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -121,14 +133,11 @@ public class AdminView {
         containerPanel.add(panel, BorderLayout.NORTH);
         containerPanel.add(buttonsPanel, BorderLayout.CENTER);
 
-        frame.setSize(550, 750);
+        frame.setSize(700, 750);
         frame.setLayout(new BorderLayout());
         frame.add(containerPanel);
         
         frame.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new AdminView();
-    }
 }

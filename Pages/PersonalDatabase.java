@@ -6,27 +6,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
 import javax.swing.JOptionPane;
 
 import Models.Book;
-import Models.GeneralBook;
 import Models.PersonalBook;
 import Models.PersonalManager;
 import Models.Review;
-import Models.User;
 import Pages.reviewSystem.ReviewPage;
 
 public class PersonalDatabase extends GeneralDatabase  {
+    ResourceBundle messages;
     
-    public PersonalDatabase(String username) {
-        super(username, false);
+    public PersonalDatabase(String username, ResourceBundle bundle) {
+        super(username, false, bundle);
+        messages = bundle;
         frame.setSize(1300, 950);
         scrollPane.setBounds(50, 150, 1200, 750);
 
-        String[] newcolumns = new String[]{"Status", "Time Spent",
-            "Start Date", "End Date", "User Rating", "User Review"};
+        String[] newcolumns = new String[]{messages.getString("Status"), messages.getString("Time_Spent"),
+            messages.getString("Start_Date"), messages.getString("End_Date"), messages.getString("User_Rating"), messages.getString("User_Review")};
 
         model.setRowCount(0);
         for (String str : newcolumns) {
@@ -48,13 +49,13 @@ public class PersonalDatabase extends GeneralDatabase  {
                 int row = table.rowAtPoint(e.getPoint());
                 int column = table.columnAtPoint(e.getPoint());
 
-                if (row != -1 && (column == table.getColumnModel().getColumnIndex("User Review") || 
-                    column == table.getColumnModel().getColumnIndex("User Rating"))){
+                if (row != -1 && (column == table.getColumnModel().getColumnIndex(messages.getString("User_Review")) || 
+                    column == table.getColumnModel().getColumnIndex(messages.getString("User_Rating")))){
                     table.clearSelection();
                     e.consume();
                     String value = (String) table.getModel().getValueAt(row, column);
-                    String title = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex("Title"));
-                    String author = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex("Author"));
+                    String title = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex(messages.getString("title")));
+                    String author = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex(messages.getString("author")));
 
                     List<Review> reviewList = new ArrayList<>();
 
