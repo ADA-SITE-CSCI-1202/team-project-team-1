@@ -71,7 +71,7 @@ public class SignUpPage extends LoginPage{
     ResourceBundle messages;
 
     public SignUpPage(HashMap<String, String> loginInfo, JFrame loginFrame, ResourceBundle bundle) {
-        super(loginInfo);
+        super(loginInfo, bundle);
 
         messages = bundle;
 

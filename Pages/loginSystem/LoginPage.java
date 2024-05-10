@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -36,34 +37,47 @@ import Pages.UserView;
 
 public class LoginPage {
     @SuppressWarnings("deprecation")
-    Locale locale = new Locale("az", "Az");
 
-    ResourceBundle messages = ResourceBundle.getBundle("languages.messages", locale);
+    ResourceBundle messages;
     
     JFrame frame = new JFrame();
+
+    
 
     JPanel panel = new JPanel();
 
     JLabel imageLabel = new JLabel(new ImageIcon("Pages/assets/resized.png"));
-    JLabel clickableLabel = new JLabel(messages.getString("signUpLabel")); //"New Here? Sign Up"
+    JLabel clickableLabel;
 
-    JLabel userIDLabel = new JLabel(messages.getString("username"));
-    JLabel userPasswordLabel = new JLabel(messages.getString("password"));
+    JLabel userIDLabel;
+    JLabel userPasswordLabel;
 
     JTextField userIDField = new JTextField();
     JPasswordField userPasswordField = new JPasswordField();
 
-    JButton loginButton = new JButton(messages.getString("loginButton"));
-    JButton signInsteadButton = new JButton(messages.getString("signInsteadButton"));
+    JButton loginButton;
+    JButton signInsteadButton;
 
     Border compoundBorder = BorderFactory.createCompoundBorder(
                                     BorderFactory.createLineBorder(Color.darkGray), 
                                     BorderFactory.createEmptyBorder(5, 10, 5, 10)
                                     );
+    String languageText;
 
-    public LoginPage(HashMap <String, String> loginInfo) {
+    @SuppressWarnings("deprecation")
+    public LoginPage(HashMap <String, String> loginInfo, ResourceBundle bundle) {
         //Without the following code snippet, when program starts, java automatically activates userIDField which makes the login page unprofessional
         //So this code snippet makes the page more viewable
+        messages = bundle;
+        loginButton = new JButton(messages.getString("loginButton"));
+        clickableLabel = new JLabel(messages.getString("signUpLabel")); //"New Here? Sign Up"
+        userIDLabel = new JLabel(messages.getString("username"));
+        userPasswordLabel = new JLabel(messages.getString("password"));
+        signInsteadButton = new JButton(messages.getString("signInsteadButton"));
+
+        
+         
+        
         frame.addWindowListener((WindowListener) new WindowAdapter() { 
             @Override
             public void windowOpened(WindowEvent e) {
