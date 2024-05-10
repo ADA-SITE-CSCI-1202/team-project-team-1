@@ -71,3 +71,15 @@ ILogin <|.. IRegister : extends
 
 @enduml
 ```
+
+In Login System package’s IdandPassword.java class, we read Users.csv file and assign it to a hashmap. And with this class’ getLoginInfo() method, we can get that hashmap.
+Whenever user input username and password, it is checked whether this username and password is in this hashmap. If yes, and if login and password equal to “admin”, then adminView is opened, else if they equal to user, userView is opened. If username is correct but password is wrong, program warns user that password is wrong. There are some exceptional(error) cases as well:
+
+In this JFrame, user tries to sign new UserName and Password to the Database. But there are exceptional cases and some requirements:
+•	Username should be between 5 and 15 characters
+•	Password should contain at least 8 characters, including at least 1 Uppercase, 1 Lowercase letter, and 1 number 
+•	The second and the first passwords should be the same
+•	The most import: Username should be new
+•	All the blanks should be entered
+
+if any of them is not handled, then error and corresponding JOptionPanes appears. Each of them has custom classes extending an exception and initializing its JOptionPane.
