@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class UsersManager {
+public class UsersManager {
     private static final String CSV_FILE = "Data/accounts.csv";
 
     public UsersManager() {}

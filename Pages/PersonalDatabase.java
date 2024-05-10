@@ -83,8 +83,8 @@ public class PersonalDatabase extends GeneralDatabase  {
                 LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
                 .mapToObj(col -> table.getValueAt(row, col))
                 .toArray()));
-                Models.Book book = new Models.Book((String)list.get(0), (String)list.get(1));
-                //deletebook from personal db
+                Book book = new Book((String)list.get(0), (String)list.get(1));
+                pm.removeBookFromCsv(book.getTitle(), username);
 
                 model.removeRow(row);
                 JOptionPane.showMessageDialog(null, "The Book Successfully Removed from the Personal DataBase! ", "Success", JOptionPane.INFORMATION_MESSAGE);

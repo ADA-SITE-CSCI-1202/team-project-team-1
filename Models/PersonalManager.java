@@ -67,6 +67,10 @@ public class PersonalManager {
         // Remove leading and trailing brackets
         reviewString = reviewString.substring(1, reviewString.length() - 1);
 
+        if (reviewString.isEmpty()){
+            return reviews;
+        }
+
         // Split review entries by ".(" and remove the closing parenthesis from the last entry
         String[] reviewEntries = reviewString.split("\\)\\.\\(");
         if (reviewEntries.length > 0) {
@@ -199,6 +203,6 @@ public class PersonalManager {
     }
 
     public static void main(String[] args) {
-        removeBookFromCsv("Mur", "Murad");
+        removeBookFromCsv("Epic of Gilgamesh", "Murad");
     }
 }

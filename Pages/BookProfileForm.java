@@ -125,10 +125,6 @@ public class BookProfileForm extends JFrame {
                     endDate = LocalDate.of(Integer.parseInt(endedYear), endedMonth.getValue(), Integer.parseInt(endDay));
                     formattedEndDate = endDate.format(formatter);        
                 }
-
-                // if (GeneralCSV.contains()) {
-                //     throw new IllegalAccessError();
-                // }
                     
                 if (startDate.compareTo(endDate) > 0)
                     throw new TimeLimitExceededException();

@@ -5,6 +5,8 @@ public class Review {
     private String content;
     private int rating;
 
+    public Review() {}
+
     public Review(String user, String content, int rating) {
         this.user = user;
         this.content = content;

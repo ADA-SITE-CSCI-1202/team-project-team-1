@@ -142,9 +142,24 @@ public class GeneralDatabase{
                                 int wordWidth = fm.stringWidth(word.trim());
                                 Rectangle wordRect = new Rectangle(xPos, yStart, wordWidth, (int) layout.getAscent() + (int) layout.getDescent());
 
+                                String title = (String) table.getValueAt(row, 0);
+                                String author = (String) table.getValueAt(row, 1);
+                                Review mainReview = new Review();
+
+                                for (GeneralBook generalBook : books) {
+                                    if (generalBook.getTitle().equals(title)) {
+                                        List<Review> reviews = generalBook.getReviews();
+                                        for (Review review : reviews) {
+                                            if (username.equals(review.getUser())) {
+                                                mainReview = review;
+                                            }
+                                        }
+                                    }
+                                }
+
                                 if (wordRect.contains(e.getPoint())) {
                                     JOptionPane.showMessageDialog(table, "You clicked on word: " + word.trim());
-                                    ReviewPage rp = new ReviewPage(new Book(lineText, username), null, null, table, column, row); 
+                                    ReviewPage rp = new ReviewPage(new Book(title, author), mainReview, false, table, column, row); 
                                     
                                     return; // Stop after the first match
                                 }

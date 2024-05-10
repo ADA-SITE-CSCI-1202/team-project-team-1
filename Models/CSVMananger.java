@@ -13,6 +13,12 @@ public class CSVMananger {
     private static final String Brodsky_FILE = "Data/brodsky.csv";
 
     public static void initialCreation() {
+        UsersManager um = new UsersManager();
+
+        if (!um.readFromCsv().isEmpty()) {
+            return;
+        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(Brodsky_FILE));
              BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
             
@@ -41,7 +47,7 @@ public class CSVMananger {
                         title = "Unknown";
                     }
 
-                    writer.write(title + "," + author + ",");
+                    writer.write(title + "," + author + ",[]");
                     writer.newLine();
                 }
             }    
