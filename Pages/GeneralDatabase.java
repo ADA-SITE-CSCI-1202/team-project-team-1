@@ -33,6 +33,7 @@ import Models.Book;
 import Models.CSVMananger;
 import Models.GeneralBook;
 import Models.Review;
+import Models.User;
 import Pages.reviewSystem.ReviewPage;
 
 import javax.swing.JButton;
@@ -61,6 +62,7 @@ public class GeneralDatabase{
     JButton addButton;
     ActionListener listener;
     String username;
+    JLabel goBack = new JLabel("Go Back");
 
     public <M> String arrayListToString(ArrayList<M> list) { //Reads arraylist, as in case review list, then converts it to string in a formatted way
         return list.stream()
@@ -69,6 +71,22 @@ public class GeneralDatabase{
     }
 
     public GeneralDatabase(String username, boolean isAdmin) {
+        goBack.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                if (isAdmin)
+                    new AdminView();
+                else
+                    new UserView(new User(username, " "));
+                frame.dispose();
+            }
+        });
+        frame.add(goBack);
+        goBack.setBounds(100, 10, 100, 100);
+        goBack.setFont(new Font("Arial", 0, 20));
+        goBack.setForeground(Color.blue);
+
+
         this.username = username;
  
         column = new String[]{"Title","Author","Rating", "Reviews"};
@@ -99,43 +117,45 @@ public class GeneralDatabase{
 
                 else if (row != -1 && column == 3) {
                     table.clearSelection();
-                    Rectangle cellRect = table.getCellRect(row, column, true);
-                    String text = table.getValueAt(row, column).toString();
-                    FontMetrics fm = table.getFontMetrics(table.getFont());
-                    FontRenderContext frc = fm.getFontRenderContext();
+                    if (table.getValueAt(row, column) != "No Review"){
+                        Rectangle cellRect = table.getCellRect(row, column, true);
+                        String text = table.getValueAt(row, column).toString();
+                        FontMetrics fm = table.getFontMetrics(table.getFont());
+                        FontRenderContext frc = fm.getFontRenderContext();
 
-                    // Prepare to measure the text
-                    AttributedString attrStr = new AttributedString(text);
-                    LineBreakMeasurer measurer = new LineBreakMeasurer(attrStr.getIterator(), frc);
-                    int xStart = cellRect.x + 2; // Start X position
-                    int yStart = cellRect.y + 5; // Start Y position
+                        // Prepare to measure the text
+                        AttributedString attrStr = new AttributedString(text);
+                        LineBreakMeasurer measurer = new LineBreakMeasurer(attrStr.getIterator(), frc);
+                        int xStart = cellRect.x + 2; // Start X position
+                        int yStart = cellRect.y + 5; // Start Y position
 
-                    // Measure lines
-                    while (measurer.getPosition() < text.length()) {
-                        TextLayout layout = measurer.nextLayout(cellRect.width - 4);
+                        // Measure lines
+                        while (measurer.getPosition() < text.length()) {
+                            TextLayout layout = measurer.nextLayout(cellRect.width - 4);
 
-                        // Check each word in this line
-                        String lineText = text.substring(measurer.getPosition() - layout.getCharacterCount(), measurer.getPosition());
-                        String[] words = lineText.split(", ");
-                        int xPos = xStart;
+                            // Check each word in this line
+                            String lineText = text.substring(measurer.getPosition() - layout.getCharacterCount(), measurer.getPosition());
+                            String[] words = lineText.split(", ");
+                            int xPos = xStart;
 
-                        for (String word : words) {
-                            int wordWidth = fm.stringWidth(word.trim());
-                            Rectangle wordRect = new Rectangle(xPos, yStart, wordWidth, (int) layout.getAscent() + (int) layout.getDescent());
+                            for (String word : words) {
+                                int wordWidth = fm.stringWidth(word.trim());
+                                Rectangle wordRect = new Rectangle(xPos, yStart, wordWidth, (int) layout.getAscent() + (int) layout.getDescent());
 
-                            if (wordRect.contains(e.getPoint())) {
-                                JOptionPane.showMessageDialog(table, "You clicked on word: " + word.trim());
-                                ReviewPage rp = new ReviewPage(new Book(lineText, username), null, null, table, column, row); 
-                                 
-                                return; // Stop after the first match
+                                if (wordRect.contains(e.getPoint())) {
+                                    JOptionPane.showMessageDialog(table, "You clicked on word: " + word.trim());
+                                    ReviewPage rp = new ReviewPage(new Book(lineText, username), null, null, table, column, row); 
+                                    
+                                    return; // Stop after the first match
+                                }
+
+                                xPos += wordWidth + fm.stringWidth(", "); // Adjust position for next word
                             }
 
-                            xPos += wordWidth + fm.stringWidth(", "); // Adjust position for next word
+                            yStart += layout.getAscent() + layout.getDescent() + layout.getLeading(); // Adjust Y position for the next line
                         }
-
-                        yStart += layout.getAscent() + layout.getDescent() + layout.getLeading(); // Adjust Y position for the next line
-                    }
-                } 
+                    } 
+            }
             }
         });
 
@@ -385,7 +405,7 @@ public class GeneralDatabase{
 
 
     public static void main(String[] args) {
-        new GeneralDatabase("admin", true);
+        new GeneralDatabase("Farhad", false);
     }
 }
 

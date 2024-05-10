@@ -21,7 +21,7 @@ import Pages.reviewSystem.ReviewPage;
 public class PersonalDatabase extends GeneralDatabase  {
     
     public PersonalDatabase(String username) {
-        super(username);
+        super(username, false);
         frame.setSize(1300, 950);
         scrollPane.setBounds(50, 150, 1200, 750);
 
@@ -100,7 +100,4 @@ public class PersonalDatabase extends GeneralDatabase  {
         });
     }
 
-    public static void main(String[] args) {
-        new PersonalDatabase("Murad");
-    }
 }

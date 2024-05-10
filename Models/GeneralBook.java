@@ -38,7 +38,7 @@ public class GeneralBook extends Book{
             count++;
         }
 
-        return totalRating / count;
+        return (count != 0) ? totalRating / count : 0;
     }
     
     @Override

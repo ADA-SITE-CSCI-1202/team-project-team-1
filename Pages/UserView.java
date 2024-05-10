@@ -107,6 +107,16 @@ public class UserView {
                 ex.printStackTrace();
             }
         });
+
+        generalDB.addActionListener(e -> {
+            frame.dispose();
+            new GeneralDatabase(user.getUsername(), false);
+        });
+
+        personalDB.addActionListener(e -> {
+            frame.dispose();
+            new PersonalDatabase(user.getUsername());
+        });
             
         topPanel.add(generalDB);
         topPanel.add(personalDB);

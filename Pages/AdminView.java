@@ -89,7 +89,7 @@ public class AdminView {
         generalDB.addActionListener(e -> {
             try {
                 frame.dispose();
-                new GeneralDatabase("admin");
+                new GeneralDatabase("admin", true);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
