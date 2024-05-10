@@ -39,10 +39,6 @@ public class AdminView {
     JButton generalDB = new JButton("General DB Management");
     JButton logOut = new JButton("Log Out");
 
-    JButton addButton = new JButton("Add");
-    JButton removeButton = new JButton("Remove");
-    JButton editButton = new JButton("Edit");
-
     Border compoundBorder = BorderFactory.createCompoundBorder(
                                         BorderFactory.createLineBorder(new Color(0xdb6d13), 4, true),
                                         BorderFactory.createEmptyBorder(5, 10, 5, 10)
@@ -130,5 +126,9 @@ public class AdminView {
         frame.add(containerPanel);
         
         frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new AdminView();
     }
 }
