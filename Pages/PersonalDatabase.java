@@ -39,7 +39,7 @@ public class PersonalDatabase extends GeneralDatabase  {
         List<PersonalBook> books = pm.readFromCsv(username);
         
         for (PersonalBook personalBook : books) {
-            model.addRow(new Object[]{personalBook.getTitle(), personalBook.getAuthor(), personalBook.getRating(), personalBook.getReviews(), personalBook.getStatus(), personalBook.getTimeSpent(), personalBook.getStartDate(), personalBook.getEndDate(), personalBook.getUserRating(), (personalBook.getUserReview().equals("Add Review")) ? personalBook.getUserReview() : ((personalBook.getUserReview().length() >= 10) ? personalBook.getUserReview().substring(0,10) : personalBook.getUserReview()) + "Click To Read More"});
+            model.addRow(new Object[]{personalBook.getTitle(), personalBook.getAuthor(), personalBook.getRating(), personalBook.getReviews(), personalBook.getStatus(), personalBook.getTimeSpent(), personalBook.getStartDate(), personalBook.getEndDate(), !(personalBook.getUserRating() == 0) ? personalBook.getUserRating() : "No Rating", (personalBook.getUserReview().equals("Add Review")) ? personalBook.getUserReview() : ((personalBook.getUserReview().length() >= 10) ? personalBook.getUserReview().substring(0,10) : personalBook.getUserReview()) + "Click To Read More"});
         }
 
         
