@@ -81,28 +81,29 @@ public class CSVMananger {
         // Remove leading and trailing brackets
         reviewString = reviewString.substring(1, reviewString.length() - 1);
 
-        if (!reviewString.isEmpty()) {
-            // Split review entries by ".(" and remove the closing parenthesis from the last entry
-            String[] reviewEntries = reviewString.split("\\)\\.\\(");
-            if (reviewEntries.length > 0) {
-                reviewEntries[reviewEntries.length - 1] = reviewEntries[reviewEntries.length - 1].substring(0, reviewEntries[reviewEntries.length - 1].length() - 1);
-            }
-            
-            for (String entry : reviewEntries) {
-                String[] parts = entry.split("\\.");
-
-                String user = parts[0];
-                if (user.startsWith("(")) {
-                    user = user.substring(1); // Remove leading bracket
-                }
-
-                String content = (parts.length > 1) ? parts[1] : "";
-                int rating = (parts.length > 2 && !parts[2].isEmpty()) ? Integer.parseInt(parts[2]) : 0;
-
-                reviews.add(new Review(user, content, rating));
-            }
+        if (reviewString.isEmpty()) {
+            return reviews;
         }
         
+        // Split review entries by ".(" and remove the closing parenthesis from the last entry
+        String[] reviewEntries = reviewString.split("\\)\\.\\(");
+        if (reviewEntries.length > 0) {
+            reviewEntries[reviewEntries.length - 1] = reviewEntries[reviewEntries.length - 1].substring(0, reviewEntries[reviewEntries.length - 1].length() - 1);
+        }
+        
+        for (String entry : reviewEntries) {
+            String[] parts = entry.split("\\.");
+
+            String user = parts[0];
+            if (user.startsWith("(")) {
+                user = user.substring(1); // Remove leading bracket
+            }
+
+            String content = (parts.length > 1) ? parts[1] : "";
+            int rating = (parts.length > 2 && !parts[2].isEmpty()) ? Integer.parseInt(parts[2]) : 0;
+
+            reviews.add(new Review(user, content, rating));
+        }
 
         return reviews;
     }
