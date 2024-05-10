@@ -29,9 +29,11 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
+import Models.Book;
 import Models.CSVMananger;
 import Models.GeneralBook;
 import Models.Review;
+import Pages.reviewSystem.ReviewPage;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -123,6 +125,8 @@ public class GeneralDatabase{
 
                             if (wordRect.contains(e.getPoint())) {
                                 JOptionPane.showMessageDialog(table, "You clicked on word: " + word.trim());
+                                ReviewPage rp = new ReviewPage(new Book(lineText, username), null, null, table, column, row); 
+                                 
                                 return; // Stop after the first match
                             }
 

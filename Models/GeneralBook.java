@@ -45,8 +45,7 @@ public class GeneralBook extends Book{
     public String toString() {
         StringBuilder sb = new StringBuilder();
         
-        sb.append("Title: " + this.getTitle() + "\n");
-        sb.append("Author: " + this.getAuthor() + "\n");
+        sb.append(this.getTitle() + "," + this.getAuthor() + "\n");
         
         for (Review review : this.Reviews) {
             sb.append(review.toString() + "\n");

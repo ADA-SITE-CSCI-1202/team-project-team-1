@@ -6,10 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class PersonalManager {
@@ -50,14 +47,14 @@ public class PersonalManager {
                 List<Review> reviews = parseReviews(parts[2]);
                 String status = !parts[3].isEmpty() ? parts[3] : "Not Started";
                 int timeSpent = Integer.parseInt(parts[4]);
-                Date startDate = parseDate(parts[5]);
-                Date endDate = parseDate(parts[6]);
+                String startDate = parts[5];
+                String endDate = parts[6];
                 int userRating = !parts[7].isEmpty() ? Integer.parseInt(parts[7]) : 0;
                 String userReview = !parts[8].isEmpty() ? parts[8] : "No Review";
 
                 personalBooks.add(new PersonalBook(title, author, reviews, status, timeSpent, startDate, endDate, userRating, userReview));
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -93,19 +90,19 @@ public class PersonalManager {
         return reviews;
     }
 
-    private static Date parseDate(String dateString) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        return sdf.parse(dateString);
-    }
-
     public static void addPersonalBookToCsv(GeneralBook book, String username) {
         String csvFileName = CSV_FOLDER + username + ".csv";
-    
+
+        if (personalBookExists(book.getTitle(), username)) {
+            System.out.println("The book already exists for this user.");
+            return;
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFileName, true))) {
             String line = String.format("%s,%s,%s,%s,%d,%s,%s,%d,%s",
                     book.getTitle(), book.getAuthor(), formatReviews(book.getReviews()), "Not Started", 0,
                     "", "", 0, "No Review");
-            
+
             writer.write(line);
             writer.newLine();
         } catch (IOException e) {
@@ -115,11 +112,16 @@ public class PersonalManager {
 
     public static void addPersonalBookToCsv(PersonalBook book, String username) {
         String csvFileName = CSV_FOLDER + username + ".csv";
-    
+        
+        if (personalBookExists(book.getTitle(), username)) {
+            System.out.println("The book already exists for this user.");
+            return;
+        }
+        
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFileName, true))) {
             String line = String.format("%s,%s,%s,%s,%d,%s,%s,%d,%s",
-                    book.getTitle(), book.getAuthor(), formatReviews(book.getReviews()), "Not Started", book.getTimeSpent(),
-                    book.getStartDate(), book.getEndDate(), book.getUserRating(), !book.getUserReview().isEmpty() ? book.getUserReview() : "No Review");
+            book.getTitle(), book.getAuthor(), formatReviews(book.getReviews()), "Not Started", book.getTimeSpent(),
+            book.getStartDate(), book.getEndDate(), book.getUserRating(), !book.getUserReview().isEmpty() ? book.getUserReview() : "No Review");
             
             writer.write(line);
             writer.newLine();
@@ -127,22 +129,30 @@ public class PersonalManager {
             e.printStackTrace();
         }
     }
+
+    private static boolean personalBookExists(String bookTitle, String username) {
+        String csvFileName = CSV_FOLDER + username + ".csv";
     
-    private static String formatReviews(List<Review> reviews) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        
-        for (Review review : reviews) {
-            sb.append("(" + review.getUser() + "." + review.getContent() + "." + review.getRating() + ")");
+        try (BufferedReader reader = new BufferedReader(new FileReader(csvFileName))) {
+            reader.readLine(); // Skip header line
+    
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 1 && parts[0].equals(bookTitle)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        
-        sb.append("]");
-        return sb.toString();
+    
+        return false;
     }
 
     public static void removeBookFromCsv(String bookName, String username) {
         String csvFileName = CSV_FOLDER + username + ".csv";
-
+        
         List<String> linesToRemove = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(csvFileName))) {
             String line;
@@ -176,6 +186,16 @@ public class PersonalManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static String formatReviews(List<Review> reviews) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (Review review : reviews) {
+            sb.append("(").append(review.getUser()).append(".").append(review.getContent()).append(".").append(review.getRating()).append(")");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     public static void main(String[] args) {

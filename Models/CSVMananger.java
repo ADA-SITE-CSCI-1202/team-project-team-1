@@ -105,6 +105,12 @@ public class CSVMananger {
     }
 
     public static void addToCsv(Book book) {
+        // Check if the book already exists
+        if (bookExists(book)) {
+            System.out.println("The book already exists in the CSV file.");
+            return;
+        }
+
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE, true))) {
             String line = String.format("%s,%s,", book.getTitle(), book.getAuthor());
             
@@ -114,6 +120,22 @@ public class CSVMananger {
             e.printStackTrace();
         }
     }
+
+    private static boolean bookExists(Book book) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 2 && parts[0].equals(book.getTitle()) && parts[1].equals(book.getAuthor())) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    } 
 
     public static void addReviewToCsv(String title, Review review){
         try {
@@ -166,7 +188,7 @@ public class CSVMananger {
         List<GeneralBook> books = readFromCsv();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
-            writer.write("Title,Author,Reviews");
+            writer.write("Title, Author,Reviews");
             writer.newLine();
             
             for (GeneralBook book : books) {
