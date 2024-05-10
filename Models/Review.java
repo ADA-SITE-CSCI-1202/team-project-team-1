@@ -39,6 +39,6 @@ public class Review {
 
     @Override
     public String toString() {
-        return "Username: " + getUser() + " Review: " + getContent() + " Rating: " + getRating() + "\n";
+        return getUser();
     }
 }

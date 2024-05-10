@@ -53,11 +53,13 @@ public class PersonalDatabase extends GeneralDatabase  {
                     column == table.getColumnModel().getColumnIndex(messages.getString("User_Rating")))){
                     table.clearSelection();
                     e.consume();
+                    
                     String value = (String) table.getModel().getValueAt(row, column);
                     String title = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex(messages.getString("title")));
                     String author = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex(messages.getString("author")));
 
                     List<Review> reviewList = new ArrayList<>();
+                    Review rev = new Review();
 
                     for (PersonalBook personalBook : books) {
                         if(personalBook.getTitle().equals(title)) {
@@ -65,8 +67,14 @@ public class PersonalDatabase extends GeneralDatabase  {
                         }
                     }
 
+                    for (Review review : reviewList) {
+                        if (review.getUser().equals(username)) {
+                            rev = review;
+                        }
+                    }
+
                     if (value.contains("To Read More") || "12345".contains(value)) {
-                        ReviewPage rp = new ReviewPage(new Book(title, author), reviewList.get(0), true, table, column, row);
+                        ReviewPage rp = new ReviewPage(new Book(title, author), rev, true, table, column, row);
                     }
                     else{
                         new ReviewPage(new Book(title, author), null, true, table, column, row);
