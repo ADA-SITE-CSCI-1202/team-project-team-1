@@ -66,9 +66,6 @@ public class PersonalManager {
     private static List<Review> parseReviews(String reviewString) {
         List<Review> reviews = new ArrayList<>();
 
-        // Remove leading and trailing brackets
-        reviewString = reviewString.substring(1, reviewString.length() - 1);
-
         if (reviewString.isEmpty()){
             return reviews;
         }

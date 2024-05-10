@@ -94,7 +94,7 @@ public class BookProfileForm extends JFrame {
                 String review = reviewTextArea.getText();
 
                 int timeSpent = (timeSpentText.length() > 0) ? Integer.parseInt(timeSpentText) : 0;
-                int rating = (ratingText != "No Rating") ? Integer.parseInt(ratingText) : -1;
+                int rating = (ratingText != "No Rating") ? Integer.parseInt(ratingText) : 0;
                 review = (review.length() > 0) ? review : "Add Review";
 
                 String startDay = String.valueOf(startDayCombo.getSelectedItem());
@@ -134,8 +134,7 @@ public class BookProfileForm extends JFrame {
                 PersonalManager pm = new PersonalManager();
                 pm.addPersonalBookToCsv(new PersonalBook(book.getTitle(), book.getAuthor(), book.getReviews(), "", timeSpent, formattedStartDate, formattedEndDate, rating, review), username);
 
-                CSVMananger manager = new CSVMananger();
-                manager.addReviewToCsv(book.getTitle(), new Review(username, review, rating));
+                CSVMananger.addReviewToCsv(book.getTitle(), new Review(username, review, rating));
 
                 timefield.setText("");
                 reviewTextArea.setText("");

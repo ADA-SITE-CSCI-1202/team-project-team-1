@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 public class CSVMananger {
     private static final String CSV_FILE = "Data/general.csv";
     private static final String Brodsky_FILE = "Data/brodsky.csv";
@@ -49,7 +47,7 @@ public class CSVMananger {
                         title = "Unknown";
                     }
 
-                    writer.write(title + "," + author + ",[]");
+                    writer.write(title + "," + author + ",");
                     writer.newLine();
                 }
             }    
@@ -86,9 +84,6 @@ public class CSVMananger {
     private static List<Review> parseReviews(String reviewString) { 
         List<Review> reviews = new ArrayList<>();
 
-        // Remove leading and trailing brackets
-        reviewString = reviewString.substring(1, reviewString.length() - 1);
-
         if (reviewString.isEmpty()) {
             return reviews;
         }
@@ -120,7 +115,7 @@ public class CSVMananger {
         // Check if the book already exists
 
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE, true))) {
-            String line = String.format("%s,%s,[]", book.getTitle(), book.getAuthor());
+            String line = String.format("%s,%s,", book.getTitle(), book.getAuthor());
             
             writer.write(line);
             writer.newLine();
@@ -215,7 +210,6 @@ public class CSVMananger {
                     GeneralBook generalBook = (GeneralBook) book;
                     List<Review> reviews = generalBook.getReviews();
                     if (reviews != null && !reviews.isEmpty()) {
-                        lineBuilder.append("[");
                         for (Review review : reviews) {
                             lineBuilder.append("(")
                                        .append(review.getUser()).append(".")
@@ -223,8 +217,7 @@ public class CSVMananger {
                                        .append(review.getRating())
                                        .append(").");
                         }
-                        lineBuilder.deleteCharAt(lineBuilder.length() - 1); // Remove the trailing period
-                        lineBuilder.append("]");
+                        lineBuilder.deleteCharAt(lineBuilder.length() - 1);
                     }
                 }
                 writer.write(lineBuilder.toString());
@@ -274,7 +267,6 @@ public class CSVMananger {
 
     public static void main(String[] args) {
         initialCreation();
-        
     }
     
 }
