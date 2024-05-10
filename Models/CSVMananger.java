@@ -75,31 +75,34 @@ public class CSVMananger {
         return books;
     }
 
-    private static List<Review> parseReviews(String reviewString) {
+    private static List<Review> parseReviews(String reviewString) { 
         List<Review> reviews = new ArrayList<>();
 
         // Remove leading and trailing brackets
         reviewString = reviewString.substring(1, reviewString.length() - 1);
 
-        // Split review entries by ".(" and remove the closing parenthesis from the last entry
-        String[] reviewEntries = reviewString.split("\\)\\.\\(");
-        if (reviewEntries.length > 0) {
-            reviewEntries[reviewEntries.length - 1] = reviewEntries[reviewEntries.length - 1].substring(0, reviewEntries[reviewEntries.length - 1].length() - 1);
-        }
-
-        for (String entry : reviewEntries) {
-            String[] parts = entry.split("\\.");
-
-            String user = parts[0];
-            if (user.startsWith("(")) {
-                user = user.substring(1); // Remove leading bracket
+        if (!reviewString.isEmpty()) {
+            // Split review entries by ".(" and remove the closing parenthesis from the last entry
+            String[] reviewEntries = reviewString.split("\\)\\.\\(");
+            if (reviewEntries.length > 0) {
+                reviewEntries[reviewEntries.length - 1] = reviewEntries[reviewEntries.length - 1].substring(0, reviewEntries[reviewEntries.length - 1].length() - 1);
             }
+            
+            for (String entry : reviewEntries) {
+                String[] parts = entry.split("\\.");
 
-            String content = (parts.length > 1) ? parts[1] : "";
-            int rating = (parts.length > 2 && !parts[2].isEmpty()) ? Integer.parseInt(parts[2]) : 0;
+                String user = parts[0];
+                if (user.startsWith("(")) {
+                    user = user.substring(1); // Remove leading bracket
+                }
 
-            reviews.add(new Review(user, content, rating));
+                String content = (parts.length > 1) ? parts[1] : "";
+                int rating = (parts.length > 2 && !parts[2].isEmpty()) ? Integer.parseInt(parts[2]) : 0;
+
+                reviews.add(new Review(user, content, rating));
+            }
         }
+        
 
         return reviews;
     }
@@ -112,7 +115,7 @@ public class CSVMananger {
         }
 
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE, true))) {
-            String line = String.format("%s,%s,", book.getTitle(), book.getAuthor());
+            String line = String.format("%s,%s,[]", book.getTitle(), book.getAuthor());
             
             writer.write(line);
             writer.newLine();
@@ -162,11 +165,11 @@ public class CSVMananger {
                                 .append(")");
                     } else {
                         // If there are no existing reviews, create a new list of reviews
-                        updatedLine.append("[(")
+                        updatedLine.append("(")
                                 .append(review.getUser()).append(".")
                                 .append(review.getContent()).append(".")
                                 .append(review.getRating())
-                                .append(")]");
+                                .append(")");
                     }
                     line = updatedLine.toString();
                 }
@@ -265,7 +268,8 @@ public class CSVMananger {
     }
 
     public static void main(String[] args) {
-        editInCsv(new Book("Emin", "EM"), "Farhad");
+        System.out.println(readFromCsv());
+        
     }
     
 }

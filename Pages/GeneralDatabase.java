@@ -68,7 +68,7 @@ public class GeneralDatabase{
                    .collect(Collectors.joining(", "));  // Customize delimiter here
     }
 
-    public GeneralDatabase(String username) {
+    public GeneralDatabase(String username, boolean isAdmin) {
         this.username = username;
  
         column = new String[]{"Title","Author","Rating", "Reviews"};
@@ -87,7 +87,7 @@ public class GeneralDatabase{
         List<GeneralBook> books = manager.readFromCsv();
 
         for (GeneralBook generalBook : books) {
-            model.addRow(new Object[]{generalBook.getTitle(), generalBook.getAuthor(), generalBook.getRating(), generalBook.getReviews()});
+            model.addRow(new Object[]{generalBook.getTitle(), generalBook.getAuthor(), (generalBook.getRating() == 0) ? "No Rating" : generalBook.getRating(), !generalBook.getReviews().isEmpty() ? generalBook.getReviews() : "No Review"});
         }
 
         table.addMouseListener(new MouseAdapter() { 
@@ -147,30 +147,75 @@ public class GeneralDatabase{
         });
 
         addButton = new JButton("Add");
-        listener = e -> {
-            int row = table.getSelectedRow();
-            table.clearSelection();
-            try {
-                List<Review> reviewsList = new ArrayList<>();
-                float rating = 0;
+        if (isAdmin != true){
+            listener = e -> {
+                int row = table.getSelectedRow();
+                table.clearSelection();
+                try {
+                    List<Review> reviewsList = new ArrayList<>();
+                    float rating = 0;
 
-                LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
-                .mapToObj(col -> table.getValueAt(row, col))
-                .toArray()));
+                    LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
+                    .mapToObj(col -> table.getValueAt(row, col))
+                    .toArray()));
 
-                for (GeneralBook generalBook : books) {
-                    if(generalBook.getTitle().equals((String)list.get(0))) {
-                        reviewsList = generalBook.getReviews();
-                        rating = generalBook.getRating();
+                    for (GeneralBook generalBook : books) {
+                        if(generalBook.getTitle().equals((String)list.get(0))) {
+                            reviewsList = generalBook.getReviews();
+                            rating = generalBook.getRating();
+                        }
                     }
-                }
 
-                GeneralBook book = new GeneralBook((String)list.get(0), (String)list.get(1), rating, reviewsList);
-                new BookProfileForm(book, username);
-            } catch (IndexOutOfBoundsException ex) {
-                JOptionPane.showMessageDialog(null, "You Should Select a Book! ", "Warning", JOptionPane.ERROR_MESSAGE);
-            }            
-        };
+                    GeneralBook book = new GeneralBook((String)list.get(0), (String)list.get(1), rating, reviewsList);
+                    new BookProfileForm(book, username);
+                } catch (IndexOutOfBoundsException ex) {
+                    JOptionPane.showMessageDialog(null, "You Should Select a Row! ", "Warning", JOptionPane.ERROR_MESSAGE);
+                }            
+            };
+        }
+        else{
+            listener = e -> {
+                table.clearSelection();
+                try {
+                    new adminCUD(false, "", table, 0, model);
+                } catch (IndexOutOfBoundsException ex) {
+                    JOptionPane.showMessageDialog(null, "You Should Select a Book! ", "Warning", JOptionPane.ERROR_MESSAGE);
+                }            
+            };
+
+            JButton removeButton = new JButton("Remove");
+            removeButton.addActionListener((e) -> {
+                int row = table.getSelectedRow();
+                LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
+                    .mapToObj(col -> table.getValueAt(row, col))
+                    .toArray()));
+
+                CSVMananger.removeFromCsv((String)list.get(0)); 
+                model.removeRow(row);
+            });  
+            frame.add(removeButton);
+            removeButton.setBounds(1020, 105, 100, 35);
+
+            JButton editButton = new JButton("Edit");
+            editButton.addActionListener((e) -> {
+                try {
+                    int row = table.getSelectedRow();
+                    System.out.println(row);
+                    LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
+                        .mapToObj(col -> table.getValueAt(row, col))
+                        .toArray()));
+                    
+                    new adminCUD(true, (String)list.get(0), table, row, model);
+                } catch (Exception exc) {
+                    JOptionPane.showMessageDialog(null, "You Should Select a Book! ", "Warning", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+
+            frame.add(editButton);
+            editButton.setBounds(780, 105, 100, 35);
+            
+        }
+        
 
         addButton.addActionListener(listener);
         addButton.setBounds(900, 105, 100, 35);
@@ -340,7 +385,7 @@ public class GeneralDatabase{
 
 
     public static void main(String[] args) {
-        new GeneralDatabase("Murad");
+        new GeneralDatabase("admin", true);
     }
 }
 
