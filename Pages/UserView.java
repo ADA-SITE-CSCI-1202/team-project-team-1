@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -33,26 +34,34 @@ public class UserView {
     ImageIcon libraryIcon = new ImageIcon("Pages/assets/online-library.png");
     ImageIcon logOutIcon = new ImageIcon("Pages/assets/logout.png");
 
-    JLabel projectName = new JLabel("Library Management");
+    JLabel projectName;
     
     JLabel title = new JLabel();
     
-    JButton generalDB = new JButton("General \nDB");
-    JButton personalDB = new JButton("Personal \nDB");
-    JButton logOut = new JButton("Log Out");
+    JButton generalDB;
+    JButton personalDB;
+    JButton logOut;
 
     Border compoundBorder = BorderFactory.createCompoundBorder(
                                         BorderFactory.createLineBorder(new Color(0xdb6d13), 4, true),
                                         BorderFactory.createEmptyBorder(5, 10, 5, 10)
                                         );
 
-    public UserView(User user) {
+    ResourceBundle messages;
+    public UserView(User user, ResourceBundle bundle) {
+        messages = bundle;
+
+        projectName = new JLabel(messages.getString("projectName"));
+        generalDB = new JButton(messages.getString("generalDBName"));
+        personalDB = new JButton(messages.getString("personalDBName"));
+        logOut = new JButton(messages.getString("logOut"));
+
         this.user = user;
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         panel.setBackground(new Color(0xdb6d13));
-        panel.setPreferredSize(new Dimension(550, 250));
+        panel.setPreferredSize(new Dimension(750, 250));
         panel.setBorder(BorderFactory.createEmptyBorder(50, 30, 50, 30));
         
         libraryIcon = new ImageIcon(libraryIcon.getImage().getScaledInstance(65, 65, java.awt.Image.SCALE_SMOOTH));
@@ -76,7 +85,7 @@ public class UserView {
             BorderFactory.createEmptyBorder(50, 5, 5, 5)
             ));
 
-        generalDB.setPreferredSize(new Dimension(200, 150));
+        generalDB.setPreferredSize(new Dimension(300, 150));
         generalDB.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 6, true));
         generalDB.setFocusPainted(false);
         generalDB.setMargin(new Insets(0, 0, 0, 0));
@@ -84,7 +93,7 @@ public class UserView {
         generalDB.setFont(new Font(null, Font.BOLD, 24));
         generalDB.setForeground(new Color(0xdb6d13));
         
-        personalDB.setPreferredSize(new Dimension(200, 150));
+        personalDB.setPreferredSize(new Dimension(300, 150));
         personalDB.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 6, true));
         personalDB.setFocusPainted(false);
         personalDB.setMargin(new Insets(0, 0, 0, 0));
@@ -110,12 +119,12 @@ public class UserView {
 
         generalDB.addActionListener(e -> {
             frame.dispose();
-            new GeneralDatabase(user.getUsername(), false);
+            new GeneralDatabase(user.getUsername(), false, messages);
         });
 
         personalDB.addActionListener(e -> {
             frame.dispose();
-            new PersonalDatabase(user.getUsername());
+            new PersonalDatabase(user.getUsername(), messages);
         });
             
         topPanel.add(generalDB);
@@ -128,7 +137,7 @@ public class UserView {
         containerPanel.add(panel, BorderLayout.NORTH);
         containerPanel.add(buttonsPanel, BorderLayout.CENTER);
 
-        frame.setSize(550, 750);
+        frame.setSize(700, 750);
         frame.setLayout(new BorderLayout());
         frame.add(containerPanel);
         

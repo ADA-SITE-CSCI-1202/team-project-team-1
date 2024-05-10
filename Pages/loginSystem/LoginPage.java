@@ -13,6 +13,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -32,21 +34,26 @@ import Pages.AdminView;
 import Pages.UserView;
 
 public class LoginPage {
+    @SuppressWarnings("deprecation")
+    Locale locale = new Locale("az", "Az");
+
+    ResourceBundle messages = ResourceBundle.getBundle("languages.messages", locale);
+    
     JFrame frame = new JFrame();
 
     JPanel panel = new JPanel();
 
     JLabel imageLabel = new JLabel(new ImageIcon("Pages/assets/resized.png"));
-    JLabel clickableLabel = new JLabel("New Here? Sign Up");
+    JLabel clickableLabel = new JLabel(messages.getString("signUpLabel")); //"New Here? Sign Up"
 
-    JLabel userIDLabel = new JLabel("Username");
-    JLabel userPasswordLabel = new JLabel("Password");
+    JLabel userIDLabel = new JLabel(messages.getString("username"));
+    JLabel userPasswordLabel = new JLabel(messages.getString("password"));
 
     JTextField userIDField = new JTextField();
     JPasswordField userPasswordField = new JPasswordField();
 
-    JButton loginButton = new JButton("Login");
-    JButton signInsteadButton = new JButton("SignUp Instead");
+    JButton loginButton = new JButton(messages.getString("loginButton"));
+    JButton signInsteadButton = new JButton(messages.getString("signInsteadButton"));
 
     Border compoundBorder = BorderFactory.createCompoundBorder(
                                     BorderFactory.createLineBorder(Color.darkGray), 
@@ -69,18 +76,18 @@ public class LoginPage {
 
         imageLabel.setBounds(400, 50, 400, 350);
 
-        clickableLabel.setBounds(125, 350, 150, 30);
+        clickableLabel.setBounds(125, 350, 180, 30);
         clickableLabel.setForeground(Color.BLUE);
         clickableLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         clickableLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-                new SignUpPage(loginInfo, frame);
+                new SignUpPage(loginInfo, frame, messages);
                 frame.setVisible(false);
             }
         });
 
-        userIDLabel.setBounds(10, 2, 75, 25);
+        userIDLabel.setBounds(10, 2, 100, 25);
         userIDLabel.setForeground(Color.gray);
         userIDField.add(userIDLabel);
         userIDField.setBorder(compoundBorder);
@@ -145,18 +152,18 @@ public class LoginPage {
 
             try {
                 if(ID.length() < 1 || Password.length() < 1){
-                    throw new BlankInputException();
+                    throw new BlankInputException(messages.getString("blankInputError"));
                 }
 
                 if (ID.equals("admin") && Password.equals("admin")) {
                     frame.dispose();
-                    new AdminView();
+                    new AdminView(messages);
                 }
     
-                if (loginInfo.containsKey(ID)) {
+                else if (loginInfo.containsKey(ID)) {
                     if (loginInfo.get(ID).equals(Password)) {
                         frame.dispose();
-                        new UserView(new User(ID, Password)); //should be: new UserView(ID, Password);
+                        new UserView(new User(ID, Password), messages); //should be: new UserView(ID, Password);
                     }
                     else{
                         JOptionPane.showMessageDialog(null, "Wrong Password! ", "Warning", JOptionPane.ERROR_MESSAGE);
@@ -165,11 +172,11 @@ public class LoginPage {
                 }
                 else{
                     signInsteadButton.addActionListener(ee -> { //lambda expression 2 starts whose functionality is mainly to instantiate a SignUp Page class
-                        new SignUpPage(loginInfo, frame);
+                        new SignUpPage(loginInfo, frame, messages);
                         frame.setVisible(false);
                     }); //lambda expression 2 ends
-                    Object[] options = {"Try Again", signInsteadButton};
-                    JOptionPane.showOptionDialog(null, "User Not Found, Sign Up Instead", "Not Found", 0, 0, null, options, options[1]);
+                    Object[] options = {messages.getString("tryAgain"), signInsteadButton};
+                    JOptionPane.showOptionDialog(null, messages.getString("signUpInstead"), messages.getString("signUpInsteadTitle"), 0, 0, null, options, options[1]);
 
                 }
                 

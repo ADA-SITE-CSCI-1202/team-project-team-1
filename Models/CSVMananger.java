@@ -41,7 +41,7 @@ public class CSVMananger {
                         title = "Unknown";
                     }
 
-                    writer.write(title + "," + author + ",");
+                    writer.write(title + "," + author + ",[]");
                     writer.newLine();
                 }
             }    
@@ -269,7 +269,7 @@ public class CSVMananger {
     }
 
     public static void main(String[] args) {
-        System.out.println(readFromCsv());
+        initialCreation();
         
     }
     

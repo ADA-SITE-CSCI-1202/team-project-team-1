@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -70,14 +71,16 @@ public class GeneralDatabase{
                    .collect(Collectors.joining(", "));  // Customize delimiter here
     }
 
-    public GeneralDatabase(String username, boolean isAdmin) {
+    ResourceBundle messages;
+    public GeneralDatabase(String username, boolean isAdmin, ResourceBundle bundle) {
+        messages = bundle;
         goBack.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
                 if (isAdmin)
-                    new AdminView();
+                    new AdminView(messages);
                 else
-                    new UserView(new User(username, " "));
+                    new UserView(new User(username, " "), messages);
                 frame.dispose();
             }
         });
@@ -89,7 +92,7 @@ public class GeneralDatabase{
 
         this.username = username;
  
-        column = new String[]{"Title","Author","Rating", "Reviews"};
+        column = new String[]{messages.getString("title"),messages.getString("author"),messages.getString("Rating"), messages.getString("Reviews")};
 
         model = new DefaultTableModel(data, column); 
         table = new JTable(model){
@@ -105,7 +108,7 @@ public class GeneralDatabase{
         List<GeneralBook> books = manager.readFromCsv();
 
         for (GeneralBook generalBook : books) {
-            model.addRow(new Object[]{generalBook.getTitle(), generalBook.getAuthor(), (generalBook.getRating() == 0) ? "No Rating" : generalBook.getRating(), !generalBook.getReviews().isEmpty() ? generalBook.getReviews() : "No Review"});
+            model.addRow(new Object[]{generalBook.getTitle(), generalBook.getAuthor(), (generalBook.getRating() == 0) ? messages.getString("No_Rating") : generalBook.getRating(), !generalBook.getReviews().isEmpty() ? generalBook.getReviews() : messages.getString("No_Review")});
         }
 
         table.addMouseListener(new MouseAdapter() { 
@@ -117,7 +120,7 @@ public class GeneralDatabase{
 
                 else if (row != -1 && column == 3) {
                     table.clearSelection();
-                    if (table.getValueAt(row, column) != "No Review"){
+                    if (table.getValueAt(row, column) != messages.getString("No Review")){
                         Rectangle cellRect = table.getCellRect(row, column, true);
                         String text = table.getValueAt(row, column).toString();
                         FontMetrics fm = table.getFontMetrics(table.getFont());
@@ -377,7 +380,7 @@ public class GeneralDatabase{
             // }
                 
 
-            if (column == table.getColumnModel().getColumnIndex("Reviews")){
+            if (column == table.getColumnModel().getColumnIndex(messages.getString("Reviews"))){
                 this.setForeground(Color.blue);
                 this.setBorder(new EmptyBorder(0, 0, 0, 0));
             }
