@@ -77,7 +77,7 @@ public class PersonalDatabase extends GeneralDatabase  {
                         ReviewPage rp = new ReviewPage(new Book(title, author), rev, true, table, column, row);
                     }
                     else{
-                        new ReviewPage(new Book(title, author), null, true, table, column, row);
+                        ReviewPage rp = new ReviewPage(new Book(title, author), rev, true, table, column, row);
                     }
                 }
 

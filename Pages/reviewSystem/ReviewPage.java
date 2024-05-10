@@ -22,9 +22,6 @@ public class ReviewPage {
     public JFrame frame;
     public JTextArea reviewTextArea;
 
-    public static void main(String[] args) {
-    }
-
     public ReviewPage (Book book, Review review, Boolean isEditable, JTable table, int column, int row){
         String content = (review != null) ? review.getContent() : "";
         String userNameString = review.getUser(); 
