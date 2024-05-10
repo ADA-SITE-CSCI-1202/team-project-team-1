@@ -20,7 +20,7 @@ public class IDandPassword {
         }
     }
 
-    protected HashMap <String, String> getLoginInfo() {
+    public HashMap <String, String> getLoginInfo() {
         return loginInfo;
     }
 }

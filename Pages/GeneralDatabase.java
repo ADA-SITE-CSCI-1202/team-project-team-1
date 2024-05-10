@@ -111,6 +111,8 @@ public class GeneralDatabase{
             model.addRow(new Object[]{generalBook.getTitle(), generalBook.getAuthor(), (generalBook.getRating() == 0) ? messages.getString("No_Rating") : generalBook.getRating(), !generalBook.getReviews().isEmpty() ? generalBook.getReviews() : messages.getString("No_Review")});
         }
 
+        
+
         table.addMouseListener(new MouseAdapter() { 
             public void mouseClicked(MouseEvent e) {
                 int row = table.rowAtPoint(e.getPoint());
