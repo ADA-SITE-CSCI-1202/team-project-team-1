@@ -1,0 +1,2 @@
+ - When deleting a book from personal user, delete their reviews from general book  
+ - For better storage handling, you can change general.csv not to save reviews of users, but user ids. By doing that, the app will not need to save reviews twice
