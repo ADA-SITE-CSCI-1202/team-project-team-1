@@ -82,7 +82,7 @@ public class SignUpPage extends LoginPage{
         loginButton.setBounds(0, 0, 0, 0);
 
         AgainPasswordLabel.setText(messages.getString("againPasswordLabel"));
-        AgainPasswordLabel.setBounds(10, 2, 100, 25);
+        AgainPasswordLabel.setBounds(10, 2, 150, 25);
         AgainPasswordLabel.setForeground(Color.gray);
         AgainPasswordField.add(AgainPasswordLabel);
 

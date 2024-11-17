@@ -89,9 +89,10 @@ public class BookProfileForm extends JFrame {
 
         saveButton.addActionListener((e) -> {
             try {
+                System.out.println("buradayam");
                 String timeSpentText = timefield.getText();
                 String ratingText = String.valueOf(ratingComboBox.getSelectedItem());
-                String review = reviewTextArea.getText();
+                String review = reviewTextArea.getText().replace("\n", "\\n");
 
                 int timeSpent = (timeSpentText.length() > 0) ? Integer.parseInt(timeSpentText) : 0;
                 int rating = (ratingText != "No Rating") ? Integer.parseInt(ratingText) : 0;
@@ -131,10 +132,11 @@ public class BookProfileForm extends JFrame {
                 if (startDate.compareTo(endDate) > 0)
                     throw new TimeLimitExceededException();
 
-                PersonalManager pm = new PersonalManager();
-                pm.addPersonalBookToCsv(new PersonalBook(book.getTitle(), book.getAuthor(), book.getReviews(), "", timeSpent, formattedStartDate, formattedEndDate, rating, review), username);
+                review = (review.equals("Add Review")) ? "" : review;
 
-                CSVMananger.addReviewToCsv(book.getTitle(), new Review(username, review, rating));
+                PersonalManager.addPersonalBookToCsv(new PersonalBook(book.getId(), "", timeSpent, formattedStartDate, formattedEndDate, rating, review), username, new Review(username, review, rating));
+                
+
 
                 timefield.setText("");
                 reviewTextArea.setText("");
@@ -152,8 +154,8 @@ public class BookProfileForm extends JFrame {
             } catch (TimeLimitExceededException ex) {
                 JOptionPane.showMessageDialog(null, "The End Date Cannot Be After the Start Date!", "Warning", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalAccessError iae){
+                System.err.println(iae.getMessage());
                 JOptionPane.showMessageDialog(null, "The Book Already Exists in General Database", "Warning", JOptionPane.ERROR_MESSAGE);
-
             }
 
         });

@@ -53,8 +53,14 @@ import javax.swing.RowFilter;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+
+import java.awt.*;
 
 public class GeneralDatabase{
     JFrame frame = new JFrame();
@@ -69,6 +75,7 @@ public class GeneralDatabase{
     ActionListener listener;
     String username;
     JLabel goBack = new JLabel("Go Back");
+    Integer nextID;
 
     public <M> String arrayListToString(ArrayList<M> list) { //Reads arraylist, as in case review list, then converts it to string in a formatted way
         return list.stream()
@@ -77,6 +84,7 @@ public class GeneralDatabase{
     }
 
     ResourceBundle messages;
+
     public GeneralDatabase(String username, boolean isAdmin, ResourceBundle bundle) {
         messages = bundle;
         goBack.addMouseListener(new MouseAdapter() {
@@ -110,9 +118,19 @@ public class GeneralDatabase{
         table.removeEditor(); //User cannot edit text on table
         
         List<GeneralBook> books = CSVMananger.readFromCsv();
+        nextID = 0;
 
+        
+        List <Review> reviewsToShow = null;
         for (GeneralBook generalBook : books) {
-            model.addRow(new Object[]{generalBook.getTitle(), generalBook.getAuthor(), (generalBook.getRating() == 0) ? messages.getString("No_Rating") : generalBook.getRating(), !generalBook.getReviews().isEmpty() ? generalBook.getReviews() : messages.getString("No_Review")});
+            reviewsToShow = new ArrayList<>();
+            for (Review review : generalBook.getReviews()) {
+                if (review.getContent().length() > 0)
+                    reviewsToShow.add(review);
+            }
+            Object[] objs = new Object[]{generalBook.getTitle(), generalBook.getAuthor(), (generalBook.getRating() == 0) ? messages.getString("No_Rating") : generalBook.getRating() + "(" + generalBook.getRatingCount() + ")", (reviewsToShow.size()>0) ? reviewsToShow : messages.getString("No_Review")};
+            model.addRow(objs);
+            nextID = generalBook.getId() + 1;
         }
 
         
@@ -126,7 +144,7 @@ public class GeneralDatabase{
 
                 else if (row != -1 && column == 3) {
                     table.clearSelection();
-                    if (table.getValueAt(row, column) != messages.getString("No_Review")){
+                    if (table.getValueAt(row, column).toString() != messages.getString("No_Review")){
                         Rectangle cellRect = table.getCellRect(row, column, true);
                         String text = table.getValueAt(row, column).toString();
                         FontMetrics fm = table.getFontMetrics(table.getFont());
@@ -156,10 +174,15 @@ public class GeneralDatabase{
                                 Review mainReview = new Review();
 
                                 for (GeneralBook generalBook : books) {
-                                    if (generalBook.getTitle().equals(title)) {
+                                    if (generalBook.getTitle().equals(title) && generalBook.getAuthor().equals(author)) {
                                         List<Review> reviews = generalBook.getReviews();
                                         for (Review review : reviews) {
-                                            if (username.equals(review.getUser())) {
+                                            if (word.charAt(0) == ('['))
+                                                word = word.substring(1);
+                                            if (word.charAt(word.length()-1) == ']')
+                                                word = word.substring(0, word.length()-1);
+                                            System.out.println(word);
+                                            if (word.equals(review.getUser())) {
                                                 mainReview = review;
                                             }
                                         }
@@ -167,8 +190,12 @@ public class GeneralDatabase{
                                 }
 
                                 if (wordRect.contains(e.getPoint())) {
-                                    JOptionPane.showMessageDialog(table, "You clicked on word: " + word.trim());
-                                    ReviewPage rp = new ReviewPage(new Book(title, author), mainReview, false, table, column, row); 
+                                    GeneralBook book = null;
+                                    for (GeneralBook generalBook : books) {
+                                        if (generalBook.getTitle().equals(title) && generalBook.getAuthor().equals(author))
+                                            book = generalBook;
+                                    }
+                                    ReviewPage rp = new ReviewPage(book, mainReview, false, table, column, row); 
                                     
                                     return; // Stop after the first match
                                 }
@@ -225,14 +252,13 @@ public class GeneralDatabase{
                     .mapToObj(col -> table.getValueAt(row, col))
                     .toArray()));
 
+                    GeneralBook book = null;
+
                     for (GeneralBook generalBook : books) {
-                        if(generalBook.getTitle().equals((String)list.get(0))) {
-                            reviewsList = generalBook.getReviews();
-                            rating = generalBook.getRating();
+                        if(generalBook.getTitle().equals((String)list.get(0)) && generalBook.getAuthor().equals((String)list.get(1))) {
+                            book = generalBook;
                         }
                     }
-
-                    GeneralBook book = new GeneralBook((String)list.get(0), (String)list.get(1), rating, reviewsList);
                     new BookProfileForm(book, username);
                 } catch (IndexOutOfBoundsException ex) {
                     JOptionPane.showMessageDialog(null, "You Should Select a Row! ", "Warning", JOptionPane.ERROR_MESSAGE);
@@ -243,7 +269,7 @@ public class GeneralDatabase{
             listener = e -> {
                 table.clearSelection();
                 try {
-                    new adminCUD(false, "", table, 0, model);
+                    new adminCUD(false, null, table, 0, model, nextID);
                 } catch (IndexOutOfBoundsException ex) {
                     JOptionPane.showMessageDialog(null, "You Should Select a Book! ", "Warning", JOptionPane.ERROR_MESSAGE);
                 }            
@@ -256,7 +282,15 @@ public class GeneralDatabase{
                     .mapToObj(col -> table.getValueAt(row, col))
                     .toArray()));
 
-                CSVMananger.removeFromCsv((String)list.get(0)); 
+                GeneralBook book = null;
+
+                for (GeneralBook generalBook : books) {
+                    if(generalBook.getTitle().equals((String)list.get(0)) && generalBook.getAuthor().equals((String)list.get(1))) {
+                            book = generalBook;
+                    }
+                    }
+
+                CSVMananger.removeFromCsv(book.getId());
                 model.removeRow(row);
             });  
             frame.add(removeButton);
@@ -270,8 +304,16 @@ public class GeneralDatabase{
                     LinkedList list = new LinkedList<>(Arrays.asList(IntStream.range(0, 2)
                         .mapToObj(col -> table.getValueAt(row, col))
                         .toArray()));
+
+                        GeneralBook book = null;
+
+                        for (GeneralBook generalBook : books) {
+                            if(generalBook.getTitle().equals((String)list.get(0)) && generalBook.getAuthor().equals((String)list.get(1))) {
+                                book = generalBook;
+                            }
+                        }
                     
-                    new adminCUD(true, (String)list.get(0), table, row, model);
+                    new adminCUD(true, book, table, row, model, -1);
                 } catch (Exception exc) {
                     JOptionPane.showMessageDialog(null, "You Should Select a Book! ", "Warning", JOptionPane.ERROR_MESSAGE);
                 }
@@ -334,6 +376,8 @@ public class GeneralDatabase{
         TableCellRenderer tableCellRenderer = new TextAreaRenderer();
         table.setDefaultRenderer(Object.class, tableCellRenderer);
 
+        
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 850);
         frame.getContentPane().setBackground(new Color(196, 164, 132));
@@ -360,6 +404,7 @@ public class GeneralDatabase{
         table.setRowSelectionAllowed(true);
 
 
+        table.getTableHeader().setResizingAllowed(false);
 
         table.getTableHeader().setPreferredSize(
             new Dimension(table.getWidth(), 40)
@@ -409,7 +454,7 @@ public class GeneralDatabase{
                 this.setBackground(table.getBackground());
             }
             this.setText((value == null) ? "" : value.toString());
-            adjustRowHeight(table, row, column);
+            
 
             
             // if (column == table.getColumnModel().getColumnIndex("Action")){
@@ -425,27 +470,36 @@ public class GeneralDatabase{
 
             if (column == table.getColumnModel().getColumnIndex(messages.getString("Reviews"))){
                 this.setForeground(Color.blue);
-                this.setBorder(new EmptyBorder(0, 0, 0, 0));
+                // this.setBorder(new EmptyBorder(0, 0, 0, 0));
             }
             else if (column == 9){
-                this.setBorder(new EmptyBorder(0, 0, 0, 0));
+                // this.setBorder(new EmptyBorder(0, 0, 0, 0));
             }
             else{
                 int padding = (this.getWidth() - this.getFontMetrics(this.getFont()).stringWidth(this.getText())) / 2;
-                this.setBorder(new EmptyBorder(0, padding, 0, padding/3));
+                // this.setBorder(new EmptyBorder(0, padding, 0, padding/3));
             }
+
+            adjustRowHeight(table, row, column);
                 
                 
     
             return this;
         }
     
-        private void adjustRowHeight(JTable table, int row, int column) {   //If the text is longer than the width of the cell, the
-            setBounds(table.getCellRect(row, column, false));//text occupies the next line as well
+        private void adjustRowHeight(JTable table, int row, int column) {
+            // Set the JTextArea's size based on the column's width
+            int columnWidth = table.getColumnModel().getColumn(column).getWidth();
+            setSize(columnWidth, Short.MAX_VALUE);  // Setting the width correctly for the JTextArea
+    
+            // Calculate the preferred height based on the text content and width
             int preferredHeight = getPreferredSize().height;
+    
+            // Adjust the row height if the current one is smaller than the required
             if (table.getRowHeight(row) < preferredHeight) {
-                table.setRowHeight(row, preferredHeight/2);
+                table.setRowHeight(row, preferredHeight);
             }
+
         }
     }
 }

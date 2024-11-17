@@ -22,12 +22,13 @@ public class CSVMananger {
         try (BufferedReader reader = new BufferedReader(new FileReader(Brodsky_FILE));
              BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
             
-            writer.write("Title,Author,Reviews");
+            writer.write("ID,Title,Author,Reviews");
             writer.newLine();
 
             boolean isFirstLine = true;
         
             String line;
+            int id = 0;
         
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
@@ -47,7 +48,7 @@ public class CSVMananger {
                         title = "Unknown";
                     }
 
-                    writer.write(title + "," + author + ",");
+                    writer.write(id++ + "," + title + "," + author + ",");
                     writer.newLine();
                 }
             }    
@@ -68,11 +69,12 @@ public class CSVMananger {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",", -1);
                 
-                String title = parts[0];
-                String author = parts[1];
-                List<Review> reviews = parseReviews(parts[2]);
+                Integer id = Integer.parseInt(parts[0]);
+                String title = parts[1];
+                String author = parts[2];
+                List<Review> reviews = parseReviews(parts[3]);
                 
-                books.add(new GeneralBook(title, author, reviews));
+                books.add(new GeneralBook(id, title, author, reviews));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,11 +113,12 @@ public class CSVMananger {
         return reviews;
     }
 
-    public static void addToCsv(Book book) {
+    public static void addToCsv(GeneralBook book) {
         // Check if the book already exists
+        
 
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE, true))) {
-            String line = String.format("%s,%s,", book.getTitle(), book.getAuthor());
+            String line = String.format("%d,%s,%s,", book.getId(), book.getTitle(), book.getAuthor());
             
             writer.write(line);
             writer.newLine();
@@ -140,7 +143,7 @@ public class CSVMananger {
         return false;
     } 
 
-    public static void addReviewToCsv(String title, Review review){
+    public static void addReviewToCsv(Integer id, Review review){
         try {
             BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE));
             List<String> lines = new ArrayList<>();
@@ -150,14 +153,14 @@ public class CSVMananger {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",", -1);
 
-                if (parts[0].equals(title)) {
-                    StringBuilder updatedLine = new StringBuilder(parts[0] + "," + parts[1] + ",");
+                if (parts[0].equals(String.valueOf(id))) {
+                    StringBuilder updatedLine = new StringBuilder(parts[0] + "," + parts[1] + "," + parts[2] + ",");
 
-                    String reviewsString = parts[2];
+                    String reviewsString = parts[3];
 
                     if (!reviewsString.equals("")) {
                         // If there are existing reviews, append the new review
-                        updatedLine.append(reviewsString.substring(0, reviewsString.length() - 1)); // Remove the closing bracket
+                        updatedLine.append(reviewsString.substring(0, reviewsString.length()));
                         updatedLine.append(".(")
                                 .append(review.getUser()).append(".")
                                 .append(review.getContent()).append(".")
@@ -187,7 +190,7 @@ public class CSVMananger {
         }
     }
 
-    public static void editInCsv(Book newBook, String originalName) {
+    public static void editInCsv(GeneralBook newBook, Integer id) {
         List<GeneralBook> books = readFromCsv();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
@@ -195,13 +198,15 @@ public class CSVMananger {
             writer.newLine();
             
             for (GeneralBook book : books) {
-                if (book.getTitle().equals(originalName)) {
+                if (book.getId().equals(id)) {
                     book.setTitle(newBook.getTitle());
                     book.setAuthor(newBook.getAuthor());
+                    book.setReviews(newBook.getReviews());
                     // Update reviews if necessary
                 }
     
                 StringBuilder lineBuilder = new StringBuilder();
+                lineBuilder.append(book.getId()).append(",");
                 lineBuilder.append(book.getTitle()).append(",");
                 lineBuilder.append(book.getAuthor()).append(",");
                 
@@ -228,14 +233,14 @@ public class CSVMananger {
         }
     }
 
-    public static void removeFromCsv(String bookName) {
+    public static void removeFromCsv(Integer id) {
         List<String> linesToRemove = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 1 && parts[0].equals(bookName)) {
+                if (parts.length >= 1 && parts[0].equals(String.valueOf(id))) {
                     linesToRemove.add(line);
                 }
             }

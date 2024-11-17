@@ -1,8 +1,8 @@
 package Models;
 
 public class Book {
-    private String Title;
-    private String Author;
+    public String Title;
+    public String Author;
 
     public Book(String title, String author) { Title = title; Author = author; }
 

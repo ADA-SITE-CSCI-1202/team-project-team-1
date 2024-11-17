@@ -10,8 +10,8 @@ public class PersonalBook extends GeneralBook{
     private int UserRating;
     private String UserReview;
     
-    public PersonalBook(String title, String author, List<Review> reviews, String status, int timeSpent, String startDate, String endDate, int userRating, String userReview) {
-        super(title, author, reviews);
+    public PersonalBook(Integer bookID, String status, int timeSpent, String startDate, String endDate, int userRating, String userReview) {
+        super(bookID);
         
         Status = status;
         TimeSpent = timeSpent;

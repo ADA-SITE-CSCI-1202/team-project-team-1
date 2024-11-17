@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 import javax.swing.JOptionPane;
 
 import Models.Book;
+import Models.GeneralBook;
 import Models.PersonalBook;
 import Models.PersonalManager;
 import Models.Review;
@@ -33,13 +34,21 @@ public class PersonalDatabase extends GeneralDatabase  {
         for (String str : newcolumns) {
             model.addColumn(str);
         }
-        table.setDefaultRenderer(Object.class, new TextAreaRenderer());
+        table.setDefaultRenderer(Object.class, new TextAreaRenderer()); 
 
-        PersonalManager pm = new PersonalManager();
-        List<PersonalBook> books = pm.readFromCsv(username);
+        List<PersonalBook> books = PersonalManager.readFromCsv(username);
         
+        List <Review> reviewsToShow = null;
         for (PersonalBook personalBook : books) {
-            model.addRow(new Object[]{personalBook.getTitle(), personalBook.getAuthor(), personalBook.getRating(), personalBook.getReviews(), personalBook.getStatus(), personalBook.getTimeSpent(), personalBook.getStartDate(), personalBook.getEndDate(), !(personalBook.getUserRating() == 0) ? personalBook.getUserRating() : "No Rating", (personalBook.getUserReview().equals("Add Review")) ? personalBook.getUserReview() : ((personalBook.getUserReview().length() >= 10) ? personalBook.getUserReview().substring(0,10) : personalBook.getUserReview()) + "Click To Read More"});
+            if (personalBook.getAuthor() == "Author" &&  personalBook.getTitle() == "Title") {
+                continue;
+            }
+            reviewsToShow = new ArrayList<>();
+            for (Review review : personalBook.getReviews()) {
+                if (review.getContent().length() > 0)
+                    reviewsToShow.add(review);
+            }
+            model.addRow(new Object[]{personalBook.getTitle(), personalBook.getAuthor(), (personalBook.getRating() == 0) ? messages.getString("No_Rating") : personalBook.getRating() + "(" + personalBook.getRatingCount() + ")", (reviewsToShow.size()>0) ? reviewsToShow : messages.getString("No_Review"), personalBook.getStatus(), personalBook.getTimeSpent(), personalBook.getStartDate(), personalBook.getEndDate(), !(personalBook.getUserRating() == 0) ? personalBook.getUserRating() : "No Rating", (personalBook.getUserReview().length() == 0) ? "Add Review" : ((personalBook.getUserReview().length() >= 10) ? personalBook.getUserReview().substring(0,10) + "\nClick To Read More" : personalBook.getUserReview() + "\nClick To Change")});
         }
 
         
@@ -58,26 +67,22 @@ public class PersonalDatabase extends GeneralDatabase  {
                     String title = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex(messages.getString("title")));
                     String author = (String) table.getModel().getValueAt(row, table.getColumnModel().getColumnIndex(messages.getString("author")));
 
-                    List<Review> reviewList = new ArrayList<>();
-                    Review rev = new Review();
-
+                    Review rev = null;
+                    PersonalBook book = null;
                     for (PersonalBook personalBook : books) {
-                        if(personalBook.getTitle().equals(title)) {
-                            reviewList = personalBook.getReviews();
-                        }
+                        if (personalBook.getTitle().equals(title) && personalBook.getAuthor().equals(author))
+                            book = personalBook;
                     }
 
-                    for (Review review : reviewList) {
-                        if (review.getUser().equals(username)) {
-                            rev = review;
-                        }
-                    }
+                    rev = new Review(username, book.getUserReview(), book.getUserRating());
+
+                    
 
                     if (value.contains("To Read More") || "12345".contains(value)) {
-                        ReviewPage rp = new ReviewPage(new Book(title, author), rev, true, table, column, row);
+                        ReviewPage rp = new ReviewPage(book, rev, true, table, column, row);
                     }
                     else{
-                        ReviewPage rp = new ReviewPage(new Book(title, author), rev, true, table, column, row);
+                        ReviewPage rp = new ReviewPage(book, rev, true, table, column, row);
                     }
                 }
 
@@ -93,7 +98,13 @@ public class PersonalDatabase extends GeneralDatabase  {
                 .mapToObj(col -> table.getValueAt(row, col))
                 .toArray()));
                 Book book = new Book((String)list.get(0), (String)list.get(1));
-                pm.removeBookFromCsv(book.getTitle(), username);
+                PersonalBook pb = null;
+                for (PersonalBook personalBook : books) {
+                    if (personalBook.getTitle().equals(book.getTitle()) && personalBook.getAuthor().equals(book.getAuthor()))
+                        pb = personalBook;
+
+                }
+                PersonalManager.removeBookFromCsv(pb.getId(), username);
 
                 model.removeRow(row);
                 JOptionPane.showMessageDialog(null, "The Book Successfully Removed from the Personal DataBase! ", "Success", JOptionPane.INFORMATION_MESSAGE);

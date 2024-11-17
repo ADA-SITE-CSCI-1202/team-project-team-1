@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 
 import Models.Book;
 import Models.CSVMananger;
+import Models.GeneralBook;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +17,7 @@ public class adminCUD extends JFrame {
     // Button to trigger action
     private JButton addButton;
 
-    public adminCUD(boolean isEdit, String oldTitle, JTable table, int row, DefaultTableModel model) {
+    public adminCUD(boolean isEdit, GeneralBook book, JTable table, int row, DefaultTableModel model, Integer id) {
         // Frame setup
         setTitle("Add Book Details");
         setSize(300, 150);
@@ -24,12 +25,12 @@ public class adminCUD extends JFrame {
 
         // Label and text field for Title
         add(new JLabel("Title:"));
-        titleField = new JTextField();
+        titleField = new JTextField((String)table.getValueAt(row, 0));
         add(titleField);
 
         // Label and text field for Author
         add(new JLabel("Author:"));
-        authorField = new JTextField();
+        authorField = new JTextField((String)table.getValueAt(row, 1));
         add(authorField);
 
         // Adding space to align the button to the right
@@ -52,7 +53,7 @@ public class adminCUD extends JFrame {
                             throw new Exception();
                         }
                         
-                        CSVMananger.addToCsv(new Book(title, author));
+                        CSVMananger.addToCsv(new GeneralBook(id, title, author, null));
                         JOptionPane.showMessageDialog(null, "New Book Succefully added! ", 
                         "Success", JOptionPane.INFORMATION_MESSAGE);
                         model.addRow(new Object[]{title, author, "No Rating", "No Review"});
@@ -62,7 +63,9 @@ public class adminCUD extends JFrame {
                     }
                 }
                 else{
-                    CSVMananger.editInCsv(new Book(title, author), oldTitle);
+                    book.setAuthor(author);
+                    book.setTitle(title);
+                    CSVMananger.editInCsv(book, book.getId());
                     table.setValueAt(title, row, 0);
                     table.setValueAt(author, row, 1);
                 }

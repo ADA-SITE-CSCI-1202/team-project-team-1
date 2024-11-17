@@ -64,7 +64,6 @@ public class LoginPage {
                                     );
     String languageText;
 
-    @SuppressWarnings("deprecation")
     public LoginPage(HashMap <String, String> loginInfo, ResourceBundle bundle) {
         //Without the following code snippet, when program starts, java automatically activates userIDField which makes the login page unprofessional
         //So this code snippet makes the page more viewable

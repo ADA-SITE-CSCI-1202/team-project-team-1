@@ -11,18 +11,23 @@ import javax.swing.event.DocumentListener;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
 
 import Models.Book;
+import Models.CSVMananger;
+import Models.GeneralBook;
+import Models.PersonalManager;
 import Models.Review;
 
 public class ReviewPage {
     public JFrame frame;
     public JTextArea reviewTextArea;
 
-    public ReviewPage (Book book, Review review, Boolean isEditable, JTable table, int column, int row){
+    public ReviewPage (GeneralBook book, Review review, Boolean isEditable, JTable table, int column, int row){
         String content = (review != null) ? review.getContent() : "";
         String userNameString = review.getUser(); 
         frame = new JFrame();
@@ -53,24 +58,28 @@ public class ReviewPage {
         frame.add(starLabel);
 
         if (!isEditable){
-        JLabel ratingLabel = new JLabel(String.valueOf(review.getRating())); //Takes the rating from review object and puts it // eslinde olmali: i: review.getRating()
-        ratingLabel.setBounds(340, 135, 50, 30);
-        ratingLabel.setFont(new Font("Arial", 0, 20));
-        frame.add(ratingLabel);
+            int rating = review.getRating();
+            JLabel ratingLabel = new JLabel(String.valueOf((rating > 0) ? rating : "No Rating")); //Takes the rating from review object and puts it // eslinde olmali: i: review.getRating()
+            ratingLabel.setBounds(340, 135, 100, 30);
+            ratingLabel.setFont(new Font("Arial", 0, 20));
+            frame.add(ratingLabel);
         }
         else{
-            JComboBox<Integer> starBox = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
-            String ratingValue = (String)table.getValueAt(row, review.getRating());
-            if ("12345".contains(ratingValue))
-                starBox.setSelectedIndex(Integer.parseInt(ratingValue) - 1);;            
+            JComboBox<String> starBox = new JComboBox<>(new String[]{"No Rating", "1", "2", "3", "4", "5"});
+            String ratingValue = String.valueOf(review.getRating());
+            if ("012345".contains(ratingValue))
+                starBox.setSelectedIndex(Integer.parseInt(ratingValue)); 
+
             starBox.setBounds(340, 137, 65, 30);
             starBox.setFont(new Font("Arial", 0, 17));
             
             starBox.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
-                        Integer selectedItem = (Integer) e.getItem();
-                        table.setValueAt(selectedItem, row, table.getColumnModel().getColumnIndex("User Rating"));
+                        String item = (String) e.getItem();
+                        Integer selectedItem = ("12345".contains(item)) ? Integer.valueOf(item) : 0;
+                        table.setValueAt(item, row, table.getColumnModel().getColumnIndex("User Rating"));
+                        PersonalManager.changeRatingReview(book.getId(), userNameString, selectedItem, "", "rating");
                     }
                 }
             });
@@ -98,7 +107,8 @@ public class ReviewPage {
         bookName.setHorizontalAlignment(JLabel.CENTER);
         bookName.setForeground(Color.white);
 
-        JLabel bookRating = new JLabel(String.valueOf(review.getRating()), new ImageIcon(starImg), JLabel.LEFT);
+        float brating = book.getRating();
+        JLabel bookRating = new JLabel(String.valueOf((brating > 0) ? brating : "No Rating"), new ImageIcon(starImg), JLabel.LEFT);
         bookRating.setFont(new Font("Arial", Font.BOLD, 30));
         bookRating.setForeground(Color.white);
         bookRating.setBounds(120, 200, 190, 285);
@@ -122,19 +132,21 @@ public class ReviewPage {
         reviewTag.setHorizontalAlignment(JLabel.CENTER);
 
         if (!isEditable){
-            JLabel reviewTextLabel = new JLabel("<html>" +    // Gets and sets the review text, 
-                review.getContent()                          // the functionality of html tags is that: if the line is longer than width, makes it go the next line
-                + "</html>"); //no more than 300 characters
+            JLabel reviewTextLabel = new JLabel();//no more than 300 characters
             reviewTextLabel.setBounds(130, 110, 415, 300);
             reviewTextLabel.setFont(new Font("Times New Roman", 0, 25));
             reviewTextLabel.setVerticalAlignment(JLabel.TOP);
             reviewTextLabel.setHorizontalAlignment(JLabel.CENTER);
 
+            String text = review.getContent().replace("\\n", "<br>");
+            text = wrapText(text, reviewTextLabel, 415);
+            reviewTextLabel.setText(text);
+
             boardLabel.add(reviewTextLabel);
         }
 
         else{
-            reviewTextArea = new JTextArea(content); //no more than 300 characters
+            reviewTextArea = new JTextArea(content.replace("\\n", "\n")); //no more than 300 characters
                 
             reviewTextArea.setFont(new Font("Times New Roman", 0, 25));
             reviewTextArea.setLineWrap(true);
@@ -154,9 +166,10 @@ public class ReviewPage {
                 }
     
                 private void textChanged() {
-                    String x = reviewTextArea.getText();
+                    String x = reviewTextArea.getText().replace("\n", "\\n");
                     String str = (x.length() >= 10) ? x.substring(0, 10) : x;
                     table.setValueAt(str + "...\nClick To Read More", row, column);
+                    PersonalManager.changeRatingReview(book.getId(), userNameString, -1, x, "content");
 
                 }
             });
@@ -179,4 +192,51 @@ public class ReviewPage {
 
         frame.setVisible(true);
     }
+
+    
+    // Helper function to wrap text and break long words
+    public static String wrapText(String text, JLabel label, int maxWidth) {
+        FontMetrics fm = label.getFontMetrics(label.getFont());
+        StringBuilder wrappedText = new StringBuilder("<html>");
+        String[] words = text.split(" ");
+        
+        for (String word : words) {
+            // Measure word width
+            int wordWidth = fm.stringWidth(word);
+            
+            // If the word is longer than maxWidth, break it
+            if (wordWidth > maxWidth) {
+                wrappedText.append(insertBreaksInWord(word, fm, maxWidth)).append(" ");
+            } else {
+                wrappedText.append(word).append(" ");
+            }
+        }
+
+        wrappedText.append("</html>");
+        return wrappedText.toString();
+    }
+
+    // Helper function to insert breaks in long words
+    public static String insertBreaksInWord(String word, FontMetrics fm, int maxWidth) {
+        StringBuilder result = new StringBuilder();
+        int currentWidth = 0;
+
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            currentWidth += fm.charWidth(c);
+
+            // Insert <br> when width exceeds maxWidth
+            if (currentWidth > maxWidth) {
+                result.append("<br>");
+                currentWidth = fm.charWidth(c);  // Reset current width after break
+            }
+
+            result.append(c);
+        }
+
+        return result.toString();
+    }
+    
 }
+
+

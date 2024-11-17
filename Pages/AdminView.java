@@ -73,7 +73,7 @@ public class AdminView {
 
         title.setFont(new Font(null, Font.BOLD, 24));
         title.setForeground(Color.WHITE);
-        title.setText(messages.getString("adminTitle"));
+        title.setText(messages.getString("greeting") + ", " + messages.getString("adminTitle") + "!");
         
         panel.add(projectName, BorderLayout.NORTH);
         panel.add(title, BorderLayout.CENTER);

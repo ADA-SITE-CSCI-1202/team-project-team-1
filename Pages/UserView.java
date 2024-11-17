@@ -71,7 +71,7 @@ public class UserView {
         projectName.setFont(new Font(null, Font.BOLD, 38));
         projectName.setForeground(Color.WHITE);
         
-        title.setText(messages.getString("greeting") + user.getUsername());
+        title.setText(messages.getString("greeting") + ", " + user.getUsername() + "!");
         title.setFont(new Font(null, Font.BOLD, 24));
         title.setForeground(Color.WHITE);
         
